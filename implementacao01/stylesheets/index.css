@@ -1,0 +1,45 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.canvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 31.25rem;
+  height: 31.25rem;
+  border: 1px solid #1234;
+  border-collapse: collapse;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.pixel {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #1234;
+  border-collapse: collapse;
+  cursor: pointer;
+}
+
+.pixel:hover {
+  background-color: #1234;
+}
+
+.selected {
+  background-color: #1234;
+}
