@@ -1,4 +1,4 @@
-import CanvasController from "./canvasController.js";
+import CanvasController from './canvasController.js';
 
 const canvasController = new CanvasController
 
