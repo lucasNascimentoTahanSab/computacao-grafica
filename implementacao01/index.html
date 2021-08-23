@@ -11,12 +11,138 @@
   </head>
 
   <body>
-    <main>
-      <div class="container">
-        <div class="canvas" id="canvas">
+    <div class="container">
+      <nav class="navbar" id="home">
+        <span class="navbar__title">Selecione a operação desejada:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option navbar__option--colored clickable" id="tranformacoes-geometricas">
+            Transformações geométricas
+          </li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="desenhar-reta">
+            Desenhar reta
+          </li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="desenhar-circunferencia">
+            Desenhar circunferência
+          </li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="transformacao-geometrica-opcoes">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-opcoes-para-home">
         </div>
-      </div>
-    </main>
+        <span class="navbar__title">Selecione o tipo de transformação geométrica desejada:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option navbar__option--colored clickable" id="translacao">Translação</li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="rotacao">Rotação</li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="escala">Escala</li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="reflexao">Reflexão</li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="transformacao-geometrica-fatores">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-fatores-para-opcoes">
+          <img class="clickable" src="./sources/home.svg" id="transformacao-geometrica-fatores-para-home">
+        </div>
+        <span class="navbar__title">Preencha os dados necessários para a operação:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option clickable">
+            <label for="fator-transformacao-x">Fator de transformação em x:</label>
+            <input class="input" type="text" id="fator-transformacao-x">
+          </li>
+          <li class="navbar__options--option clickable">
+            <label for="fator-transformacao-y">Fator de transformação em y:</label>
+            <input class="input" type="text" id="fator-transformacao-y">
+          </li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="transformacao-geometrica-fator-rotacao">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-fator-rotacao-para-opcoes">
+          <img class="clickable" src="./sources/home.svg" id="transformacao-geometrica-fator-rotacao-para-home">
+        </div>
+        <span class="navbar__title">Preencha os dados necessários para a operação:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option clickable">
+            <label for="angulacao">Angulação da rotação:</label>
+            <div>
+              <input class="input" type="text" id="angulacao">
+              <span>°</span>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="desenhar-reta-opcoes">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="desenhar-reta-opcoes-para-home">
+        </div>
+        <span class="navbar__title">Selecione o algoritmo desejado:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option navbar__option--colored clickable" id="dda">DDA</li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="bresenham">Bresenham</li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="desenhar-reta-pontos">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="desenhar-reta-pontos-para-opcoes">
+          <img class="clickable" src="./sources/home.svg" id="desenhar-reta-pontos-para-home">
+        </div>
+        <span class="navbar__title">Preencha os dados necessários para a operação:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option clickable">
+            <span class="input-type">Ponto incial:</span>
+            <div>
+              <label for="x-inicial">x:</label>
+              <input class="input" type="text" id="x-inicial">
+            </div>
+            <div>
+              <label for="y-inicial">y:</label>
+              <input class="input" type="text" id="y-inicial">
+            </div>
+          </li>
+          <li class="navbar__options--option clickable">
+            <span class="input-type">Ponto final:</span>
+            <div>
+              <label for="x-final">x:</label>
+              <input class="input" type="text" id="x-final">
+            </div>
+            <div>
+              <label for="y-final">y:</label>
+              <input class="input" type="text" id="y-final">
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <nav class="navbar navbar--closed" id="desenhar-circunferencia-dados">
+        <div class="botoes">
+          <img class="clickable" src="./sources/voltar.svg" id="desenhar-circunferencia-dados-para-home">
+        </div>
+        <span class="navbar__title">Preencha os dados necessários para a operação:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option">
+            <span class="input-type">Ponto central:</span>
+            <div>
+              <label for="x-inicial">x:</label>
+              <input class="input" type="text" id="x-inicial">
+            </div>
+            <div>
+              <label for="y-inicial">y:</label>
+              <input class="input" type="text" id="y-inicial">
+            </div>
+          </li>
+          <li class="navbar__options--option">
+            <span>Raio:</span>
+            <input class="input large" type="text" id="x-final">
+          </li>
+        </ul>
+      </nav>
+      <main class="main-page">
+        <section class="flex-center--vertical">
+          <!-- <h1 class="title">Operações 2D</h1> -->
+          <div class="canvas" id="canvas">
+          </div>
+        </section>
+      </main>
+    </div>
   </body>
 
 </html>
