@@ -27,7 +27,7 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="transformacao-geometrica-opcoes">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-opcoes-para-home">
         </div>
         <span class="navbar__title">Selecione o tipo de transformação geométrica desejada:</span>
@@ -39,7 +39,7 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="transformacao-geometrica-fatores">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-fatores-para-opcoes">
           <img class="clickable" src="./sources/home.svg" id="transformacao-geometrica-fatores-para-home">
         </div>
@@ -56,7 +56,7 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="transformacao-geometrica-fator-rotacao">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-fator-rotacao-para-opcoes">
           <img class="clickable" src="./sources/home.svg" id="transformacao-geometrica-fator-rotacao-para-home">
         </div>
@@ -72,7 +72,7 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="desenhar-reta-opcoes">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="desenhar-reta-opcoes-para-home">
         </div>
         <span class="navbar__title">Selecione o algoritmo desejado:</span>
@@ -82,14 +82,14 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="desenhar-reta-pontos">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="desenhar-reta-pontos-para-opcoes">
           <img class="clickable" src="./sources/home.svg" id="desenhar-reta-pontos-para-home">
         </div>
         <span class="navbar__title">Preencha os dados necessários para a operação:</span>
         <ul class="navbar__options">
           <li class="navbar__options--option clickable">
-            <span class="input-type">Ponto incial:</span>
+            <span class="input__name">Ponto incial:</span>
             <div>
               <label for="x-inicial">x:</label>
               <input class="input" type="text" id="x-inicial">
@@ -100,7 +100,7 @@
             </div>
           </li>
           <li class="navbar__options--option clickable">
-            <span class="input-type">Ponto final:</span>
+            <span class="input__name">Ponto final:</span>
             <div>
               <label for="x-final">x:</label>
               <input class="input" type="text" id="x-final">
@@ -113,13 +113,13 @@
         </ul>
       </nav>
       <nav class="navbar navbar--closed" id="desenhar-circunferencia-dados">
-        <div class="botoes">
+        <div class="navbar__buttons">
           <img class="clickable" src="./sources/voltar.svg" id="desenhar-circunferencia-dados-para-home">
         </div>
         <span class="navbar__title">Preencha os dados necessários para a operação:</span>
         <ul class="navbar__options">
           <li class="navbar__options--option">
-            <span class="input-type">Ponto central:</span>
+            <span class="input__name">Ponto central:</span>
             <div>
               <label for="x-inicial">x:</label>
               <input class="input" type="text" id="x-inicial">
@@ -137,7 +137,6 @@
       </nav>
       <main class="main-page">
         <section class="flex-center--vertical">
-          <!-- <h1 class="title">Operações 2D</h1> -->
           <div class="canvas" id="canvas">
           </div>
         </section>

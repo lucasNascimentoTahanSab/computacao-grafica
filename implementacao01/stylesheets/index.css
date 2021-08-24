@@ -54,7 +54,11 @@ h1 {
   transition: .5s;
 }
 
-.botoes {
+.navbar--closed {
+  left: -21.25rem;
+}
+
+.navbar__buttons {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -94,6 +98,25 @@ h1 {
   background-color: var(--background-blue-lighter);
 }
 
+.input {
+  width: 2rem;
+  height: 2rem;
+  outline: none;
+  text-align: center;
+  border-color: transparent;
+  border-radius: .3125rem;
+  background-color: var(--background-blue-lighter);
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-text);
+  color: var(--text-color-dark);
+  font-weight: var(--font-weight-bold);
+  caret-color: var(--text-color-dark);
+}
+
+.input__name {
+  width: 6rem;
+}
+
 .main-page {
   position: fixed;
   z-index: 10;
@@ -106,10 +129,6 @@ h1 {
   padding: 2rem;
   background-color: var(--background-pink);
   overflow: auto;
-}
-
-.title {
-  margin-bottom: 2rem;
 }
 
 .flex-center--vertical {
@@ -156,29 +175,6 @@ h1 {
 
 .clickable {
   cursor: pointer;
-}
-
-.navbar--closed {
-  left: -21.25rem;
-}
-
-.input-type {
-  width: 6rem;
-}
-
-.input {
-  width: 2rem;
-  height: 2rem;
-  outline: none;
-  text-align: center;
-  border-color: transparent;
-  border-radius: .3125rem;
-  background-color: var(--background-blue-lighter);
-  font-family: var(--font-family-text);
-  font-size: var(--font-size-text);
-  color: var(--text-color-dark);
-  font-weight: var(--font-weight-bold);
-  caret-color: var(--text-color-dark);
 }
 
 .large {
