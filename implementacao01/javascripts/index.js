@@ -1,6 +1,8 @@
 import CanvasController from './canvasController.js';
+import PixelController from './pixelController.js';
 
 const canvasController = new CanvasController
+const pixelController = new PixelController
 
 window.addEventListener('load', () => {
   carregarCanvas()
@@ -80,7 +82,51 @@ window.addEventListener('load', () => {
 
 function carregarCanvas() {
   canvasController.carregarCanvas()
-  canvasController.carregarMalhaDePixels()
+  carregarMalhaDePixels()
+}
+
+function carregarMalhaDePixels() {
+  const canvas = document.getElementById('canvas')
+  for (let x = 0; x < canvasController.quantidadePixelsHorizontal; x++) {
+    const coluna = gerarColunaEm(x)
+    const colunaPreenchida = inserirPixelsEm(coluna)
+    canvas.appendChild(colunaPreenchida)
+  }
+}
+
+function inserirPixelsEm(coluna) {
+  for (let y = 0; y < canvasController.quantidadePixelsVertical; y++) {
+    const pixel = gerarPixelNasCoordenadas(parseInt(coluna.dataset.posicao), y)
+    pixel.addEventListener('click', selecionarPixel)
+    coluna.appendChild(pixel)
+  }
+
+  return coluna
+}
+
+function selecionarPixel(pixel) {
+  if (pixel.target.classList.contains('selected')) pixel.classList.remove('selected')
+  else pixel.target.classList.add('selected')
+
+  const [x, y] = [pixel.target.dataset.x, pixel.target.dataset.y]
+  pixelController.selecionarPixel(canvasController.obterPixelNasCoordenadas(x, y))
+}
+
+function gerarColunaEm(posicao) {
+  const linha = document.createElement('div')
+  linha.dataset.posicao = posicao
+  linha.className = 'column'
+
+  return linha
+}
+
+function gerarPixelNasCoordenadas(x, y) {
+  const pixel = document.createElement('div')
+  pixel.className = 'pixel'
+  pixel.dataset.x = x
+  pixel.dataset.y = y
+
+  return pixel
 }
 
 function fecharGuiaLateral(nomeGuia) {
