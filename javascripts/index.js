@@ -1,8 +1,10 @@
 import CanvasController from './canvasController.js';
 import PixelController from './pixelController.js';
+import FormularioController from './formularioController.js';
 
 const canvasController = new CanvasController
 const pixelController = new PixelController
+const formularioController = new FormularioController
 
 window.addEventListener('load', () => {
   carregarCanvas()
@@ -78,6 +80,36 @@ window.addEventListener('load', () => {
     fecharGuiaLateral('desenhar-circunferencia-dados')
     abrirGuiaLateral('home')
   })
+  document.getElementById('fator-transformacao-x').addEventListener('input', event => {
+    preencherCampoDoFormularioTransformacoesGeometricas({ fatorTransformacaoEmX: event.target.value })
+  })
+  document.getElementById('fator-transformacao-y').addEventListener('input', event => {
+    preencherCampoDoFormularioTransformacoesGeometricas({ fatorTransformacaoEmY: event.target.value })
+  })
+  document.getElementById('angulacao').addEventListener('input', event => {
+    preencherCampoDoFormularioTransformacoesGeometricas({ angulacaoDaRotacao: event.target.value })
+  })
+  document.getElementById('x-inicial-reta').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharReta({ coordenadaXInicial: event.target.value })
+  })
+  document.getElementById('y-inicial-reta').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharReta({ coordenadaYInicial: event.target.value })
+  })
+  document.getElementById('x-final-reta').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharReta({ coordenadaXFinal: event.target.value })
+  })
+  document.getElementById('y-final-reta').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharReta({ coordenadaYFinal: event.target.value })
+  })
+  document.getElementById('x-central-circunferencia').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharCircunferencia({ coordenadaXCentral: event.target.value })
+  })
+  document.getElementById('y-central-circunferencia').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharCircunferencia({ coordenadaYCentral: event.target.value })
+  })
+  document.getElementById('raio').addEventListener('input', event => {
+    preencherCampoDoFormularioDesenharCircunferencia({ raio: event.target.value })
+  })
 })
 
 function carregarCanvas() {
@@ -135,4 +167,16 @@ function fecharGuiaLateral(nomeGuia) {
 
 function abrirGuiaLateral(nomeGuia) {
   document.getElementById(nomeGuia).classList.remove('navbar--closed')
+}
+
+function preencherCampoDoFormularioTransformacoesGeometricas(campo) {
+  formularioController.preencherCamposDoFormulario('transformacoes-geometricas', campo)
+}
+
+function preencherCampoDoFormularioDesenharReta(campo) {
+  formularioController.preencherCamposDoFormulario('desenhar-reta', campo)
+}
+
+function preencherCampoDoFormularioDesenharCircunferencia(campo) {
+  formularioController.preencherCamposDoFormulario('desenhar-circunferencia', campo)
 }
