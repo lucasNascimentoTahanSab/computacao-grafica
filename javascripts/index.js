@@ -105,7 +105,7 @@ function inserirPixelsEm(coluna) {
 }
 
 function selecionarPixel(pixel) {
-  if (pixel.target.classList.contains('selected')) pixel.classList.remove('selected')
+  if (pixel.target.classList.contains('selected')) pixel.target.classList.remove('selected')
   else pixel.target.classList.add('selected')
 
   const [x, y] = [pixel.target.dataset.x, pixel.target.dataset.y]
