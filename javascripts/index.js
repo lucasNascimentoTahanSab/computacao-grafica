@@ -6,6 +6,8 @@ const canvasController = new CanvasController
 const pixelController = new PixelController
 const formularioController = new FormularioController
 
+let operacao = ''
+
 window.addEventListener('load', () => {
   carregarCanvas()
   document.getElementById('tranformacoes-geometricas').addEventListener('click', () => {
@@ -118,16 +120,16 @@ window.addEventListener('load', () => {
     preencherCampoDoFormularioDesenharCircunferencia({ raio: event.target.value })
   })
   document.getElementById('confirmar-transformacao').addEventListener('click', () => {
-    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'transformacoes-geometricas')
+    executarOperacaoEscolhidaEmFormulario(operacao, 'transformacoes-geometricas')
   })
   document.getElementById('confirmar-rotacao').addEventListener('click', () => {
-    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'transformacoes-geometricas')
+    executarOperacaoEscolhidaEmFormulario(operacao, 'transformacoes-geometricas')
   })
   document.getElementById('confirmar-reta').addEventListener('click', () => {
-    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'desenhar-reta')
+    executarOperacaoEscolhidaEmFormulario(operacao, 'desenhar-reta')
   })
   document.getElementById('confirmar-circunferencia').addEventListener('click', () => {
-    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'desenhar-circunferencia')
+    executarOperacaoEscolhidaEmFormulario(operacao, 'desenhar-circunferencia')
   })
 })
 
@@ -189,7 +191,7 @@ function abrirGuiaLateral(nomeGuia) {
 }
 
 function registrarOperacaoEscolhida(nomeOperacao) {
-  sessionStorage.setItem('operacao', nomeOperacao)
+  operacao = nomeOperacao
 }
 
 function preencherCampoDoFormularioTransformacoesGeometricas(campo) {
