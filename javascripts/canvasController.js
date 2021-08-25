@@ -6,8 +6,6 @@ const _calcularQuantidadePixels = (canvas, alturaPixel, larguraPixel) => [canvas
 
 export default class CanvasController {
   _canvas
-  _pixelInicial
-  _pixelFinal
 
   constructor() {
     this._canvas = new Canvas

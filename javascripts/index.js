@@ -19,30 +19,37 @@ window.addEventListener('load', () => {
   document.getElementById('desenhar-circunferencia').addEventListener('click', () => {
     fecharGuiaLateral('home')
     abrirGuiaLateral('desenhar-circunferencia-dados')
+    registrarOperacaoEscolhida('desenhar-circunferencia')
   })
   document.getElementById('translacao').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
     abrirGuiaLateral('transformacao-geometrica-fatores')
+    registrarOperacaoEscolhida('translacao')
   })
   document.getElementById('rotacao').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
     abrirGuiaLateral('transformacao-geometrica-fator-rotacao')
+    registrarOperacaoEscolhida('rotacao')
   })
   document.getElementById('escala').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
     abrirGuiaLateral('transformacao-geometrica-fatores')
+    registrarOperacaoEscolhida('escala')
   })
   document.getElementById('reflexao').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
     abrirGuiaLateral('transformacao-geometrica-fatores')
+    registrarOperacaoEscolhida('reflexao')
   })
   document.getElementById('dda').addEventListener('click', () => {
     fecharGuiaLateral('desenhar-reta-opcoes')
     abrirGuiaLateral('desenhar-reta-pontos')
+    registrarOperacaoEscolhida('dda')
   })
   document.getElementById('bresenham').addEventListener('click', () => {
     fecharGuiaLateral('desenhar-reta-opcoes')
     abrirGuiaLateral('desenhar-reta-pontos')
+    registrarOperacaoEscolhida('bresenham')
   })
   document.getElementById('transformacao-geometrica-opcoes-para-home').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
@@ -110,6 +117,18 @@ window.addEventListener('load', () => {
   document.getElementById('raio').addEventListener('input', event => {
     preencherCampoDoFormularioDesenharCircunferencia({ raio: event.target.value })
   })
+  document.getElementById('confirmar-transformacao').addEventListener('click', () => {
+    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'transformacoes-geometricas')
+  })
+  document.getElementById('confirmar-rotacao').addEventListener('click', () => {
+    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'transformacoes-geometricas')
+  })
+  document.getElementById('confirmar-reta').addEventListener('click', () => {
+    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'desenhar-reta')
+  })
+  document.getElementById('confirmar-circunferencia').addEventListener('click', () => {
+    executarOperacaoEscolhidaEmFormulario(sessionStorage.getItem('operacao'), 'desenhar-circunferencia')
+  })
 })
 
 function carregarCanvas() {
@@ -140,8 +159,8 @@ function selecionarPixel(pixel) {
   if (pixel.target.classList.contains('selected')) pixel.target.classList.remove('selected')
   else pixel.target.classList.add('selected')
 
-  const [x, y] = [pixel.target.dataset.x, pixel.target.dataset.y]
-  pixelController.selecionarPixel(canvasController.obterPixelNasCoordenadas(x, y))
+  // const [x, y] = [pixel.target.dataset.x, pixel.target.dataset.y]
+  // pixelController.selecionarPixel(canvasController.obterPixelNasCoordenadas(x, y))
 }
 
 function gerarColunaEm(posicao) {
@@ -169,6 +188,10 @@ function abrirGuiaLateral(nomeGuia) {
   document.getElementById(nomeGuia).classList.remove('navbar--closed')
 }
 
+function registrarOperacaoEscolhida(nomeOperacao) {
+  sessionStorage.setItem('operacao', nomeOperacao)
+}
+
 function preencherCampoDoFormularioTransformacoesGeometricas(campo) {
   formularioController.preencherCamposDoFormulario('transformacoes-geometricas', campo)
 }
@@ -179,4 +202,9 @@ function preencherCampoDoFormularioDesenharReta(campo) {
 
 function preencherCampoDoFormularioDesenharCircunferencia(campo) {
   formularioController.preencherCamposDoFormulario('desenhar-circunferencia', campo)
+}
+
+function executarOperacaoEscolhidaEmFormulario(operacao, formulario) {
+  const informacoes = formularioController.obterFormulario(formulario)
+  pixelController.executarOperacaoPorMeioDasInformacoes(operacao, informacoes)
 }

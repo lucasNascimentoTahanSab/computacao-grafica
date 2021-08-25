@@ -18,4 +18,10 @@ export default class FormularioController {
 
     this._formularios[formulario].campos = campos
   }
+
+  obterFormulario(formulario) {
+    if (!(formulario in this._formularios)) return
+
+    return this._formularios[formulario]
+  }
 }
