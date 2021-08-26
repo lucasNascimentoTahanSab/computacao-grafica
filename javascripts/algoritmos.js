@@ -1,4 +1,26 @@
-function transladarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY) { }
+function transladarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY) {
+  const canvas = document.getElementById('canvas')
+  const quantidadePixelsHorizontal = canvas.children.length
+  const quantidadePixelsVertical = canvas.children[0].children.length
+  const fatorTransformacaoEmXAbsoluto = Math.abs(fatorTransformacaoEmX)
+  const fatorTransformacaoEmYAbsoluto = Math.abs(fatorTransformacaoEmY)
+  const comecarDaEsquerdaParaDireita = fatorTransformacaoEmX < 0
+  const comecarDeCimaParaBaixo = fatorTransformacaoEmY < 0
+  const pontoDeParadaEmX = comecarDaEsquerdaParaDireita ? quantidadePixelsHorizontal - fatorTransformacaoEmXAbsoluto : fatorTransformacaoEmXAbsoluto
+  const pontoDeParadaEmY = comecarDeCimaParaBaixo ? quantidadePixelsVertical - fatorTransformacaoEmYAbsoluto : fatorTransformacaoEmYAbsoluto
+
+  let x = comecarDaEsquerdaParaDireita ? 0 : quantidadePixelsHorizontal - 1
+  for (; comecarDaEsquerdaParaDireita ? x < quantidadePixelsHorizontal : x >= 0; comecarDaEsquerdaParaDireita ? x++ : x--) {
+    let y = comecarDeCimaParaBaixo ? 0 : quantidadePixelsVertical - 1
+    for (; comecarDeCimaParaBaixo ? y < quantidadePixelsVertical : y >= 0; comecarDeCimaParaBaixo ? y++ : y--) {
+      const pixel = canvas.children[x].children[y]
+      _aplicarTransformacoesSobrePixel(pixel, fatorTransformacaoEmX, fatorTransformacaoEmY)
+      const chegouNoPontoDeParadaEmX = comecarDaEsquerdaParaDireita ? x >= pontoDeParadaEmX : x <= pontoDeParadaEmX
+      const chegouNoPontoDeParadaEmY = comecarDeCimaParaBaixo ? y >= pontoDeParadaEmY : y <= pontoDeParadaEmY
+      if (chegouNoPontoDeParadaEmX || chegouNoPontoDeParadaEmY) _apagarPixel(x, y)
+    }
+  }
+}
 
 function rotacionarElementos(angulacaoDaRotacao) { }
 
@@ -77,9 +99,21 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, i
   }
 }
 
+function _aplicarTransformacoesSobrePixel(pixel, fatorTransformacaoEmX, fatorTransformacaoEmY) {
+  const xAposTransformacao = parseInt(pixel.dataset.x) + fatorTransformacaoEmX
+  const yAposTransformacao = parseInt(pixel.dataset.y) + fatorTransformacaoEmY
+  if (pixel.classList.contains('selected')) _desenharPixel(xAposTransformacao, yAposTransformacao)
+  else _apagarPixel(xAposTransformacao, yAposTransformacao)
+}
+
 function _desenharPixel(x, y) {
   const pixel = document.querySelector(`[data-x='${x}'][data-y='${y}'`)
   pixel?.classList.add('selected')
+}
+
+function _apagarPixel(x, y) {
+  const pixel = document.querySelector(`[data-x='${x}'][data-y='${y}'`)
+  pixel?.classList.remove('selected')
 }
 
 const _calcularDelta = (coordenadaFinal, coordernadaInicial) => coordenadaFinal - coordernadaInicial
