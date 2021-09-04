@@ -1,7 +1,10 @@
 import Pixel from './pixel.js'
 import algoritmos from './algoritmos.js'
 
+const _obterGrausEmRadianos = graus => graus * Math.PI / 180
+
 export default class PixelController {
+  _canvas
   _operacoes
 
   constructor() {
@@ -16,10 +19,16 @@ export default class PixelController {
     }
   }
 
+  atualizarCanvas(canvasController) {
+    if (typeof canvasController !== 'object') return
+
+    this._canvas = canvasController.canvas
+  }
+
   executarOperacaoPorMeioDasInformacoes(operacao, informacoes) {
     if (!(operacao in this._operacoes)) return
 
-    this._operacoes[operacao](informacoes)
+    return this._operacoes[operacao](informacoes)
   }
 
   _transladarElementos(informacoes) {
@@ -28,8 +37,8 @@ export default class PixelController {
 
     const fatorTransformacaoEmX = parseFloat(informacoes.fatorTransformacaoEmX)
     const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
-    algoritmos.transladarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY)
-    return true
+    const matrizTransformacao = this._obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY)
+    return algoritmos.transladarElementos(matrizTransformacao, this._canvas)
   }
 
   _rotacionarElementos(informacoes) {
@@ -37,8 +46,8 @@ export default class PixelController {
       return false
 
     const angulacaoDaRotacao = informacoes.angulacaoDaRotacao
-    algoritmos.rotacionarElementos(angulacaoDaRotacao)
-    return true
+    const matrizTransformacao = this._obterMatrizTransformacaoRotacao(angulacaoDaRotacao)
+    return algoritmos.rotacionarElementos(matrizTransformacao, this._canvas)
   }
 
   _escalarElementos(informacoes) {
@@ -47,18 +56,16 @@ export default class PixelController {
 
     const fatorTransformacaoEmX = parseFloat(informacoes.fatorTransformacaoEmX)
     const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
-    algoritmos.escalarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY)
-    return true
+    const matrizTransformacao = this._obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY)
+    return algoritmos.escalarElementos(matrizTransformacao, this._canvas)
   }
 
   _refletirElementos(informacoes) {
-    if (!('fatorTransformacaoEmX' in informacoes) || !('fatorTransformacaoEmY' in informacoes))
+    if (!('refletirEmX' in informacoes) || !('refletirEmY' in informacoes))
       return false
 
-    const fatorTransformacaoEmX = parseFloat(informacoes.fatorTransformacaoEmX)
-    const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
-    algoritmos.refletirElementos(fatorTransformacaoEmX, fatorTransformacaoEmY)
-    return true
+    const matrizTransformacao = this._obterMatrizTransformacaoReflexao(informacoes.refletirEmX, informacoes.refletirEmY)
+    return algoritmos.refletirElementos(matrizTransformacao, this._canvas)
   }
 
   _desenharRetaComAlgoritmoDDA(informacoes) {
@@ -70,8 +77,7 @@ export default class PixelController {
 
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial);
-    return true
+    return algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas);
   }
 
   _desenharRetaComAlgoritmoBresenham(informacoes) {
@@ -83,8 +89,7 @@ export default class PixelController {
 
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial)
-    return true
+    return algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas)
   }
 
   _desenharCircunferencia(informacoes) {
@@ -96,7 +101,38 @@ export default class PixelController {
 
     const pixelCentral = new Pixel({ x: parseFloat(informacoes.coordenadaXCentral), y: parseFloat(informacoes.coordenadaYCentral) })
     const raio = informacoes.raio
-    algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio))
-    return true
+    return algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas)
+  }
+
+  _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {
+    return [
+      [1, 0, fatorTransformacaoEmX],
+      [0, 1, fatorTransformacaoEmY],
+      [0, 0, 1],
+    ]
+  }
+
+  _obterMatrizTransformacaoRotacao(angulacaoDaRotacao) {
+    return [
+      [Math.cos(_obterGrausEmRadianos(angulacaoDaRotacao)), -Math.sin(_obterGrausEmRadianos(angulacaoDaRotacao)), 0],
+      [Math.sin(_obterGrausEmRadianos(angulacaoDaRotacao)), Math.cos(_obterGrausEmRadianos(angulacaoDaRotacao)), 0],
+      [0, 0, 1]
+    ]
+  }
+
+  _obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY) {
+    return [
+      [fatorTransformacaoEmX, 0, 0],
+      [0, fatorTransformacaoEmY, 0],
+      [0, 0, 1]
+    ]
+  }
+
+  _obterMatrizTransformacaoReflexao(eixoX, eixoY) {
+    return [
+      [eixoY ? -1 : 1, 0, 0],
+      [0, eixoX ? -1 : 1, 0],
+      [0, 0, 1]
+    ]
   }
 }

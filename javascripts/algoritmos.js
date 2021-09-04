@@ -1,43 +1,88 @@
-function transladarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY) {
-  const canvas = document.getElementById('canvas')
-  const quantidadePixelsHorizontal = canvas.children.length
-  const quantidadePixelsVertical = canvas.children[0].children.length
-  const fatorTransformacaoEmXAbsoluto = Math.abs(fatorTransformacaoEmX)
-  const fatorTransformacaoEmYAbsoluto = Math.abs(fatorTransformacaoEmY)
-  const comecarDaEsquerdaParaDireita = fatorTransformacaoEmX < 0
-  const comecarDeCimaParaBaixo = fatorTransformacaoEmY < 0
-  const pontoDeParadaEmX = comecarDaEsquerdaParaDireita ? quantidadePixelsHorizontal - fatorTransformacaoEmXAbsoluto : fatorTransformacaoEmXAbsoluto
-  const pontoDeParadaEmY = comecarDeCimaParaBaixo ? quantidadePixelsVertical - fatorTransformacaoEmYAbsoluto : fatorTransformacaoEmYAbsoluto
+import CanvasController from "./canvasController.js"
 
-  let x = comecarDaEsquerdaParaDireita ? 0 : quantidadePixelsHorizontal - 1
-  for (; comecarDaEsquerdaParaDireita ? x < quantidadePixelsHorizontal : x >= 0; comecarDaEsquerdaParaDireita ? x++ : x--) {
-    let y = comecarDeCimaParaBaixo ? 0 : quantidadePixelsVertical - 1
-    for (; comecarDeCimaParaBaixo ? y < quantidadePixelsVertical : y >= 0; comecarDeCimaParaBaixo ? y++ : y--) {
-      const pixel = canvas.children[x].children[y]
-      _aplicarTransformacoesSobrePixel(pixel, fatorTransformacaoEmX, fatorTransformacaoEmY)
-      const chegouNoPontoDeParadaEmX = comecarDaEsquerdaParaDireita ? x >= pontoDeParadaEmX : x <= pontoDeParadaEmX
-      const chegouNoPontoDeParadaEmY = comecarDeCimaParaBaixo ? y >= pontoDeParadaEmY : y <= pontoDeParadaEmY
-      if (chegouNoPontoDeParadaEmX || chegouNoPontoDeParadaEmY) _apagarPixel(x, y)
+const canvasController = new CanvasController
+
+function transladarElementos(matrizTransformacao, canvas) {
+  const novoCanvas = _obterNovoCanvas(canvas)
+  for (let x = 0; x < canvas.pixels.length; x++) {
+    for (let y = 0; y < canvas.pixels[x].length; y++) {
+      const matrizPonto = [x, y, 1]
+      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+
+      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
+      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+
+      novoCanvas.pixels[novoX][novoY].selecionado = true
     }
   }
+
+  return novoCanvas
 }
 
-function rotacionarElementos(angulacaoDaRotacao) { }
+function rotacionarElementos(matrizTransformacao, canvas) {
+  const novoCanvas = _obterNovoCanvas(canvas)
+  for (let x = 0; x < canvas.pixels.length; x++) {
+    for (let y = 0; y < canvas.pixels[x].length; y++) {
+      const matrizPonto = [x, y, 1]
+      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
 
-function escalarElementos(fatorTransformacaoEmX, fatorTransformacaoEmY) { }
+      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
+      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
 
-function refletirElementos(fatorTransformacaoEmX, fatorTransformacaoEmY) { }
+      novoCanvas.pixels[Math.round(novoX)][Math.round(novoY)].selecionado = true
+    }
+  }
 
-function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial) {
+  return novoCanvas
+}
+
+function escalarElementos(matrizTransformacao, canvas) {
+  const novoCanvas = _obterNovoCanvas(canvas)
+  for (let x = 0; x < canvas.pixels.length; x++) {
+    for (let y = 0; y < canvas.pixels[x].length; y++) {
+      const matrizPonto = [x, y, 1]
+      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+
+      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
+      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+
+      novoCanvas.pixels[novoX][novoY].selecionado = true
+    }
+  }
+
+  return novoCanvas
+}
+
+function refletirElementos(matrizTransformacao, canvas) {
+  const novoCanvas = _obterNovoCanvas(canvas)
+  for (let x = 0; x < canvas.pixels.length; x++) {
+    for (let y = 0; y < canvas.pixels[x].length; y++) {
+      const matrizPonto = [x, y, 1]
+      const matrizResultante = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+      const [xResultante, yResultante] = [matrizResultante[0], matrizResultante[1]]
+      const novoX = xResultante < 0 ? xResultante + (canvas.pixels.length - 1) : xResultante
+      const novoY = yResultante < 0 ? yResultante + (canvas.pixels[x].length - 1) : yResultante
+
+      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
+      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+
+      novoCanvas.pixels[novoX][novoY].selecionado = true
+    }
+  }
+
+  return novoCanvas
+}
+
+function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
   const [deltaY, deltaX] = _obterDeltas(pixelFinal, pixelInicial)
   const [deltaYAbsoluto, deltaXAbsoluto] = _obterDeltasAbsolutos(deltaY, deltaX)
   const passos = _obterQuantidadePassos(deltaYAbsoluto, deltaXAbsoluto)
   const [incrementoEmY, incrementoEmX] = _obterIncrementos(deltaY, deltaX, passos)
 
-  _calcularPontosDaReta(pixelInicial, incrementoEmX, incrementoEmY, passos)
+  return _calcularPontosDaReta(pixelInicial, [incrementoEmY, incrementoEmX], passos, canvas)
 }
 
-function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial) {
+function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
   const [deltaY, deltaX] = _obterDeltas(pixelFinal, pixelInicial)
   const [deltaYAbsoluto, deltaXAbsoluto] = _obterDeltasAbsolutos(deltaY, deltaX)
   const [incrementoEmY, incrementoEmX] = _obterIncrementosEmBresenham(deltaY, deltaX)
@@ -45,32 +90,41 @@ function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial) {
   const pInicial = deltaYAbsoluto < deltaXAbsoluto ? _obterPInicial(deltaYAbsoluto, deltaXAbsoluto) : _obterPInicial(deltaXAbsoluto, deltaYAbsoluto)
   const passos = _obterQuantidadePassos(deltaYAbsoluto, deltaXAbsoluto)
 
-  if (deltaYAbsoluto < deltaXAbsoluto) _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(
-    pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos
-  )
-  else _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(
-    pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos
-  )
+  return deltaYAbsoluto < deltaXAbsoluto
+    ? _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(
+      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+    )
+    : _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(
+      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+    )
 }
 
-function desenharCircunferencia(pixelCentral, raio) { }
+function desenharCircunferencia(pixelCentral, raio, canvas) {
+  const pInicial = _obterPInicialCircunferencia(raio)
+  const incrementos = { x: 0, y: raio }
 
-function _calcularPontosDaReta(pixelInicial, incrementoEmX, incrementoEmY, passos) {
+  return _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas)
+}
+
+function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
+  const [incrementoEmY, incrementoEmX] = incrementos
 
   for (let i = 0; i < passos + 1; i++) {
-    _desenharPixel(Math.round(x), Math.round(y))
+    canvas.pixels[Math.round(x)][Math.round(y)].selecionado = true
     x += incrementoEmX
     y += incrementoEmY
   }
+
+  return canvas
 }
 
-function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, incrementos, passos) {
+function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
 
   for (let i = 0; i < passos + 1; i++) {
-    _desenharPixel(x, y)
+    canvas.pixels[x][y].selecionado = true
     x += incrementoEmX
 
     if (p > 0) {
@@ -80,14 +134,16 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, i
       p += incrementoDePPositivo
     }
   }
+
+  return canvas
 }
 
-function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, incrementos, passos) {
+function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
 
   for (let i = 0; i < passos + 1; i++) {
-    _desenharPixel(x, y)
+    canvas.pixels[x][y].selecionado = true
     y += incrementoEmY
 
     if (p > 0) {
@@ -97,23 +153,69 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, i
       p += incrementoDePPositivo
     }
   }
+
+  return canvas
 }
 
-function _aplicarTransformacoesSobrePixel(pixel, fatorTransformacaoEmX, fatorTransformacaoEmY) {
-  const xAposTransformacao = parseInt(pixel.dataset.x) + fatorTransformacaoEmX
-  const yAposTransformacao = parseInt(pixel.dataset.y) + fatorTransformacaoEmY
-  if (pixel.classList.contains('selected')) _desenharPixel(xAposTransformacao, yAposTransformacao)
-  else _apagarPixel(xAposTransformacao, yAposTransformacao)
+function _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, p, canvas) {
+  while (incrementos.x < incrementos.y) {
+    canvas = _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas)
+    if (p < 0) {
+      p += 4 * incrementos.x + 6
+    } else {
+      p += 4 * (incrementos.x - incrementos.y) + 10
+      incrementos.y--
+    }
+
+    incrementos.x++
+  }
+
+  return canvas
 }
 
-function _desenharPixel(x, y) {
-  const pixel = document.querySelector(`[data-x='${x}'][data-y='${y}'`)
-  pixel?.classList.add('selected')
+function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
+  const comprimento = canvas.pixels.length - 1
+  const altura = canvas.pixels[0].length - 1
+
+  if (pixelCentral.x + incrementos.x < comprimento && pixelCentral.y + incrementos.y < altura)
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y + incrementos.y].selecionado = true
+  if (pixelCentral.x - incrementos.x > 0 && pixelCentral.y + incrementos.y < altura)
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y + incrementos.y].selecionado = true
+  if (pixelCentral.x + incrementos.x < comprimento && pixelCentral.y - incrementos.y > 0)
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y - incrementos.y].selecionado = true
+  if (pixelCentral.x - incrementos.x > 0 && pixelCentral.y - incrementos.y > 0)
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y - incrementos.y].selecionado = true
+  if (pixelCentral.x + incrementos.y < comprimento && pixelCentral.y + incrementos.x < altura)
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y + incrementos.x].selecionado = true
+  if (pixelCentral.x - incrementos.y > 0 && pixelCentral.y + incrementos.x < altura)
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y + incrementos.x].selecionado = true
+  if (pixelCentral.x + incrementos.y < comprimento && pixelCentral.y - incrementos.x > 0)
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y - incrementos.x].selecionado = true
+  if (pixelCentral.x - incrementos.y > 0 && pixelCentral.y - incrementos.x > 0)
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y - incrementos.x].selecionado = true
+
+  return canvas
 }
 
-function _apagarPixel(x, y) {
-  const pixel = document.querySelector(`[data-x='${x}'][data-y='${y}'`)
-  pixel?.classList.remove('selected')
+function _obterNovoCanvas(canvas) {
+  canvasController.canvas = { ...canvas }
+  canvasController.carregarCanvas()
+
+  return canvasController.canvas
+}
+
+function _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao) {
+  if (matrizPonto.length != matrizTransformacao.length) return []
+
+  const matrizResultante = []
+  for (let i = 0; i < matrizTransformacao.length; i++) {
+    let resultado = 0
+    for (let j = 0; j < matrizPonto.length; j++)
+      resultado += matrizTransformacao[i][j] * matrizPonto[j]
+    matrizResultante.push(resultado)
+  }
+
+  return matrizResultante
 }
 
 const _calcularDelta = (coordenadaFinal, coordernadaInicial) => coordenadaFinal - coordernadaInicial
@@ -123,6 +225,7 @@ const _obterQuantidadePassos = (deltaY, deltaX) => deltaX > deltaY ? deltaX : de
 const _obterIncrementos = (deltaY, deltaX, passos) => [deltaY / passos, deltaX / passos]
 const _obterIncrementosEmBresenham = (deltaY, deltaX) => [deltaY < 0 ? -1 : 1, deltaX < 0 ? -1 : 1]
 const _obterPInicial = (primeiroDelta, segundoDelta) => 2 * primeiroDelta - segundoDelta
+const _obterPInicialCircunferencia = raio => 3 - 2 * raio
 const _obterIncrementosDeP = (deltaY, deltaX) => deltaY < deltaX
   ? [2 * deltaY, 2 * (deltaY - deltaX)]
   : [2 * deltaX, 2 * (deltaX - deltaY)]

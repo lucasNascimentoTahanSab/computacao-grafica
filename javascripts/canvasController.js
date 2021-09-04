@@ -5,31 +5,32 @@ const _calcularDimensoesPixel = (canvas, zoom) => [canvas.altura * zoom, canvas.
 const _calcularQuantidadePixels = (canvas, alturaPixel, larguraPixel) => [canvas.comprimento / alturaPixel, canvas.altura / larguraPixel]
 
 export default class CanvasController {
-  _canvas
+  canvas
 
   constructor() {
-    this._canvas = new Canvas
+    this.canvas = new Canvas
   }
 
-  get quantidadePixelsHorizontal() {
-    return this._canvas.pixels.length
+  get matrizPixels() {
+    return this.canvas.pixels
   }
 
-  get quantidadePixelsVertical() {
-    return this._canvas.pixels[0].length
+  /**
+   * @param {{ target: { dataset: { x: string | number; y: string | number; }; }; }} pixel
+   */
+  set selecionarPixel(pixel) {
+    const x = pixel.target.dataset.x
+    const y = pixel.target.dataset.y
+    this.canvas.pixels[x][y].selecionado = !this.canvas.pixels[x][y].selecionado
   }
 
   carregarCanvas() {
-    const [alturaPixel, comprimentoPixel] = _calcularDimensoesPixel(this._canvas, this._canvas.zoom)
-    const [quantidadePixelsVertical, quantidadePixelsHorizontal] = _calcularQuantidadePixels(this._canvas, alturaPixel, comprimentoPixel)
-    this._canvas.pixels = this._gerarMalhaDePixelsAPartirDasInformacoes(
+    const [alturaPixel, comprimentoPixel] = _calcularDimensoesPixel(this.canvas, this.canvas.zoom)
+    const [quantidadePixelsVertical, quantidadePixelsHorizontal] = _calcularQuantidadePixels(this.canvas, alturaPixel, comprimentoPixel)
+    this.canvas.pixels = this._gerarMalhaDePixelsAPartirDasInformacoes(
       [quantidadePixelsVertical, quantidadePixelsHorizontal],
       [alturaPixel, comprimentoPixel]
     )
-  }
-
-  obterPixelNasCoordenadas(x, y) {
-    return this._canvas.pixels[x][y]
   }
 
   _gerarMalhaDePixelsAPartirDasInformacoes(quantidade, dimensoes) {
