@@ -121,6 +121,16 @@ function desenharCircunferencia(pixelCentral, raio, canvas) {
   return _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas)
 }
 
+function recorteCohenSutherland(limiteInferior, limiteSuperior, retas) {
+  for (let i = 0; i < retas.length; i++)
+    _analisarRetaParaRecorteCohenSutherland(retas[i], limiteInferior, limiteSuperior)
+}
+
+function recorteLiangBarsky(limiteInferior, limiteSuperior, retas) {
+  for (let i = 0; i < retas.length; i++)
+    _analisarRetaParaRecorteLiangBarsky(retas[i], limiteInferior, limiteSuperior)
+}
+
 function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX] = incrementos
@@ -239,6 +249,74 @@ function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   return pontos
 }
 
+function _analisarRetaParaRecorteCohenSutherland(reta, limiteInferior, limiteSuperior) {
+  let analiseConcluida = false, pixelFora
+  const [pixelInicial, pixelFinal] = [new Pixel(reta.pixels[0]), new Pixel(reta.pixels[reta.pixels.length - 1])]
+  while (!analiseConcluida) {
+    const codigoPorRegiaoPixelInicial = _obterCodigoPorRegiaoDoPixel(limiteInferior, limiteSuperior, pixelInicial)
+    const codigoPorRegiaoPixelFinal = _obterCodigoPorRegiaoDoPixel(limiteInferior, limiteSuperior, pixelFinal)
+    if (codigoPorRegiaoPixelInicial === codigoPorRegiaoPixelFinal === 0) {
+      analiseConcluida = true
+      [pixelInicial.x, pixelInicial.y] = [Math.round(pixelInicial.x), Math.round(pixelInicial.y)]
+      [pixelFinal.x, pixelFinal.y] = [Math.round(pixelFinal.x), Math.round(pixelFinal.y)]
+      _atualizarPontosRetaEmRecorte(reta, pixelInicial, pixelFinal)
+    } else if (codigoPorRegiaoPixelInicial !== 0 && codigoPorRegiaoPixelFinal !== 0) {
+      analiseConcluida = true
+      _atualizarPontosRetaEmRecorte(reta, { x: -1, y: -1 }, { x: -1, y: -1 })
+    } else {
+      pixelFora = codigoPorRegiaoPixelInicial !== 0 ? codigoPorRegiaoPixelInicial : codigoPorRegiaoPixelFinal
+      const [novoX, novoY] = _calcularNovoPontoParaRecorte(pixelFora, pixelFinal, pixelInicial, limiteInferior, limiteSuperior)
+      if (codigoPorRegiaoPixelInicial === pixelFora) {
+        pixelInicial.x = novoX
+        pixelInicial.y = novoY
+      } else {
+        pixelFinal.x = novoX
+        pixelFinal.y = novoY
+      }
+    }
+  }
+}
+
+function _analisarRetaParaRecorteLiangBarsky(reta, limiteInferior, limiteSuperior) {
+  let desenharReta = false
+  const variaveisParametricas = { inicio: 0, fim: 1 }
+  const [deltaY, deltaX] = _obterDeltas(limiteInferior, limiteSuperior)
+  const [pixelInicial, pixelFinal] = [new Pixel(reta.pixels[0]), new Pixel(reta.pixels[reta.pixels.length - 1])]
+  if (_analisarRetaEmRelacaoFronteira(-deltaX, pixelInicial.x - limiteSuperior.x, variaveisParametricas))
+    if (_analisarRetaEmRelacaoFronteira(deltaX, limiteInferior.x - pixelInicial.x, variaveisParametricas))
+      if (_analisarRetaEmRelacaoFronteira(-deltaY, pixelInicial.y - limiteSuperior.y, variaveisParametricas))
+        if (_analisarRetaEmRelacaoFronteira(deltaY, limiteInferior.y - pixelInicial.y, variaveisParametricas)) {
+          if (variaveisParametricas.fim < 1)
+            [pixelFinal.x, pixelFinal.y] = _calcularNovoPixelParametrico(pixelFinal, variaveisParametricas.fim, deltaY, deltaX)
+          if (variaveisParametricas.inicio > 0)
+            [pixelInicial.x, pixelInicial.y] = _calcularNovoPixelParametrico(pixelInicial, variaveisParametricas.inicio, deltaY, deltaX)
+          desenharReta = true
+        }
+
+  desenharReta
+    ? _atualizarPontosRetaEmRecorte(reta, pixelInicial, pixelFinal)
+    : _atualizarPontosRetaEmRecorte(reta, { x: -1, y: -1 }, { x: -1, y: -1 })
+}
+
+function _analisarRetaEmRelacaoFronteira(p, q, variaveisParametricas) {
+  const r = p / q
+  if (p < 0) {
+    if (r > variaveisParametricas.fim) return false
+    else if (r > variaveisParametricas.inicio) variaveisParametricas.inicio = r
+  } else if (p > 0) {
+    if (r < variaveisParametricas.incio) return false
+    else if (r > variaveisParametricas.fim) variaveisParametricas.fim = r
+  } else return false
+}
+
+function _atualizarPontosRetaEmRecorte(reta, limiteInferior, limiteSuperior) {
+  const [deltaY, deltaX] = _obterDeltas(limiteInferior, limiteSuperior)
+  for (let i = 0; i < reta.pixels.length; i++) {
+    if (_pixelDentroLimites(reta.pixels[i], deltaY, deltaX, limiteInferior, limiteSuperior)) continue
+    reta.pixels[i].visivel = false
+  }
+}
+
 function _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao) {
   if (matrizPonto.length != matrizTransformacao.length) return []
 
@@ -264,6 +342,25 @@ const _obterPInicialCircunferencia = raio => 3 - 2 * raio
 const _obterIncrementosDeP = (deltaY, deltaX) => deltaY < deltaX
   ? [2 * deltaY, 2 * (deltaY - deltaX)]
   : [2 * deltaX, 2 * (deltaX - deltaY)]
+const _obterCodigoPorRegiaoDoPixel = (limiteInferior, limiteSuperior, pixel) =>
+  (pixel.x < limiteSuperior.x ? '1' : '0') +
+  (pixel.x > limiteInferior.x ? '1' : '0') +
+  (pixel.y < limiteSuperior.y ? '1' : '0') +
+  (pixel.y > limiteInferior.y ? '1' : '0')
+const _calcularNovoPontoParaRecorte = (codigo, pixelFinal, pixelInicial, limiteInferior, limiteSuperior) =>
+  codigo[0] === '1' ? [limiteSuperior.x, _calcularYParaRecorte(pixelFinal, pixelInicial, limiteSuperior)] :
+    codigo[1] === '1' ? [limiteInferior.x, _calcularYParaRecorte(pixelFinal, pixelInicial, limiteInferior)] :
+      codigo[2] === '1' ? [_calcularXParaRecorte(pixelFinal, pixelInicial, limiteSuperior), limiteSuperior.y] :
+        codigo[3] === '1' ? [_calcularXParaRecorte(pixelFinal, pixelInicial, limiteInferior), limiteSuperior.y] :
+          []
+const _calcularXParaRecorte = (pixelFinal, pixelInicial, limite) =>
+  pixelInicial.x + (pixelFinal.x - pixelInicial.x) * (limite.y - pixelInicial.y) / (pixelFinal.y - pixelInicial.y)
+const _calcularYParaRecorte = (pixelFinal, pixelInicial, limite) =>
+  pixelInicial.y + (pixelFinal.y - pixelInicial.y) * (limite.x - pixelInicial.x) / (pixelFinal.x - pixelInicial.x)
+const _pixelDentroLimites = (pixel, deltaY, deltaX, limiteInferior, limiteSuperior) =>
+  ((deltaX > 0 ? pixel.x >= limiteInferior.x : pixel.x < limiteInferior.x) && (deltaY > 0 ? pixel.y >= limiteInferior.y : pixel.y < limiteInferior.y)) &&
+  ((deltaX > 0 ? pixel.x <= limiteSuperior.x : pixel.x > limiteSuperior.x) && (deltaY > 0 ? pixel.y <= limiteInferior.y : pixel.y > limiteInferior.y))
+const _calcularNovoPixelParametrico = (ponto, parametro, deltaY, deltaX) => [ponto.x + parametro * deltaX, ponto.y + parametro * deltaY]
 
 export default {
   transladarEstrutura,
@@ -273,5 +370,7 @@ export default {
   desenharRetaComAlgoritmoDDA,
   desenharRetaComAlgoritmoBresenham,
   desenharCircunferencia,
+  recorteCohenSutherland,
+  recorteLiangBarsky,
   EstruturaAtual
 }

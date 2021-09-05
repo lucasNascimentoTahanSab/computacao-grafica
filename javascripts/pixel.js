@@ -1,4 +1,5 @@
 export default class Pixel {
+  visivel
   estrutura
   idEstrutura
   selecionado
@@ -8,6 +9,7 @@ export default class Pixel {
   y
 
   constructor(pixel) {
+    this.visivel = pixel.visivel ?? true
     this.estrutura = pixel.estrutura ?? ''
     this.idEstrutura = pixel.idEstrutura ?? ''
     this.selecionado = pixel.selecionado ?? false
@@ -21,6 +23,7 @@ export default class Pixel {
    * @param {{ estrutura: String; idEstrutura: String; selecionado: Boolean; comprimento: Number; altura: Number; x: Number; y: Number; }} campos
    */
   set campos(campos) {
+    this.visivel = campos.visivel ?? this.visivel
     this.estrutura = campos.estrutura ?? this.estrutura
     this.idEstrutura = campos.idEstrutura ?? this.idEstrutura
     this.selecionado = campos.selecionado ?? this.selecionado
