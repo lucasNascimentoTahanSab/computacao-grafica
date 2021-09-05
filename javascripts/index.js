@@ -1,9 +1,7 @@
 import CanvasController from './canvasController.js';
-import PixelController from './pixelController.js';
 import FormularioController from './formularioController.js';
 
 const canvasController = new CanvasController
-const pixelController = new PixelController
 const formularioController = new FormularioController
 
 let operacao = ''
@@ -165,18 +163,17 @@ function carregarMalhaDePixels() {
 function inserirPixelsEm(pixels, coluna) {
   for (let y = 0; y < pixels.length; y++) {
     const pixel = gerarPixel(pixels[y])
-    pixel.addEventListener('click', selecionarPixel)
+    pixel.addEventListener('click', apagarPixel)
     coluna.appendChild(pixel)
   }
 
   return coluna
 }
 
-function selecionarPixel(pixel) {
+function apagarPixel(pixel) {
   if (pixel.target.classList.contains('selected')) pixel.target.classList.remove('selected')
-  else pixel.target.classList.add('selected')
 
-  canvasController.selecionarPixel = pixel
+  canvasController.apagarPixel(pixel.target.dataset.x, pixel.target.dataset.y)
 }
 
 function gerarColunaEm(posicao) {
@@ -222,7 +219,6 @@ function preencherCampoDoFormularioDesenharCircunferencia(campo) {
 
 function executarOperacaoEscolhidaEmFormulario(operacao, formulario) {
   const informacoes = formularioController.obterFormulario(formulario)
-  pixelController.atualizarCanvas(canvasController)
-  canvasController.canvas = pixelController.executarOperacaoPorMeioDasInformacoes(operacao, informacoes)
+  canvasController.executarOperacaoPorMeioDasInformacoes(operacao, informacoes)
   carregarMalhaDePixels()
 }

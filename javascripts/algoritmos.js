@@ -1,9 +1,5 @@
-import CanvasController from "./canvasController.js"
-
-const canvasController = new CanvasController
-
 function transladarElementos(matrizTransformacao, canvas) {
-  const novoCanvas = _obterNovoCanvas(canvas)
+  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
   for (let x = 0; x < canvas.pixels.length; x++) {
     for (let y = 0; y < canvas.pixels[x].length; y++) {
       const matrizPonto = [x, y, 1]
@@ -12,15 +8,15 @@ function transladarElementos(matrizTransformacao, canvas) {
       if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
       if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
 
-      novoCanvas.pixels[novoX][novoY].selecionado = true
+      novaMatrizPixels[novoX][novoY].selecionado = true
     }
   }
 
-  return novoCanvas
+  return novaMatrizPixels
 }
 
 function rotacionarElementos(matrizTransformacao, canvas) {
-  const novoCanvas = _obterNovoCanvas(canvas)
+  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
   for (let x = 0; x < canvas.pixels.length; x++) {
     for (let y = 0; y < canvas.pixels[x].length; y++) {
       const matrizPonto = [x, y, 1]
@@ -29,15 +25,15 @@ function rotacionarElementos(matrizTransformacao, canvas) {
       if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
       if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
 
-      novoCanvas.pixels[Math.round(novoX)][Math.round(novoY)].selecionado = true
+      novaMatrizPixels[Math.round(novoX)][Math.round(novoY)].selecionado = true
     }
   }
 
-  return novoCanvas
+  return novaMatrizPixels
 }
 
 function escalarElementos(matrizTransformacao, canvas) {
-  const novoCanvas = _obterNovoCanvas(canvas)
+  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
   for (let x = 0; x < canvas.pixels.length; x++) {
     for (let y = 0; y < canvas.pixels[x].length; y++) {
       const matrizPonto = [x, y, 1]
@@ -46,15 +42,15 @@ function escalarElementos(matrizTransformacao, canvas) {
       if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
       if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
 
-      novoCanvas.pixels[novoX][novoY].selecionado = true
+      novaMatrizPixels[novoX][novoY].selecionado = true
     }
   }
 
-  return novoCanvas
+  return novaMatrizPixels
 }
 
 function refletirElementos(matrizTransformacao, canvas) {
-  const novoCanvas = _obterNovoCanvas(canvas)
+  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
   for (let x = 0; x < canvas.pixels.length; x++) {
     for (let y = 0; y < canvas.pixels[x].length; y++) {
       const matrizPonto = [x, y, 1]
@@ -66,11 +62,11 @@ function refletirElementos(matrizTransformacao, canvas) {
       if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
       if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
 
-      novoCanvas.pixels[novoX][novoY].selecionado = true
+      novaMatrizPixels[novoX][novoY].selecionado = true
     }
   }
 
-  return novoCanvas
+  return novaMatrizPixels
 }
 
 function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
@@ -197,11 +193,17 @@ function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   return canvas
 }
 
-function _obterNovoCanvas(canvas) {
-  canvasController.canvas = { ...canvas }
-  canvasController.carregarCanvas()
+function _obterNovaMatrizPixels(canvas) {
+  const novaMatrizPixels = []
+  for (let i = 0; i < canvas.pixels.length; i++) {
+    novaMatrizPixels[i] = canvas.pixels[i].map(pixel => {
+      const novoPixel = { ...pixel }
+      novoPixel.selecionado = false
+      return novoPixel
+    })
+  }
 
-  return canvasController.canvas
+  return novaMatrizPixels
 }
 
 function _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao) {
