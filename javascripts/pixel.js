@@ -8,12 +8,12 @@ export default class Pixel {
   y
 
   constructor(pixel) {
-    this.estrutura = ''
-    this.idEstrutura = ''
-    this.selecionado = false
-    this.comprimento = pixel.comprimento
-    this.altura = pixel.altura
-    this.x = pixel.x
-    this.y = pixel.y
+    this.estrutura = pixel.estrutura ?? ''
+    this.idEstrutura = pixel.idEstrutura ?? ''
+    this.selecionado = pixel.selecionado ?? false
+    this.comprimento = pixel.comprimento ?? 0
+    this.altura = pixel.altura ?? 0
+    this.x = pixel.x ?? 0
+    this.y = pixel.y ?? 0
   }
 }
