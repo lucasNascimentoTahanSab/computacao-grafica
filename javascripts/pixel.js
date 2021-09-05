@@ -16,4 +16,17 @@ export default class Pixel {
     this.x = pixel.x ?? 0
     this.y = pixel.y ?? 0
   }
+
+  /**
+   * @param {{ estrutura: String; idEstrutura: String; selecionado: Boolean; comprimento: Number; altura: Number; x: Number; y: Number; }} campos
+   */
+  set campos(campos) {
+    this.estrutura = campos.estrutura ?? this.estrutura
+    this.idEstrutura = campos.idEstrutura ?? this.idEstrutura
+    this.selecionado = campos.selecionado ?? this.selecionado
+    this.comprimento = campos.comprimento ?? this.comprimento
+    this.altura = campos.altura ?? this.altura
+    this.x = campos.x ?? this.x
+    this.y = campos.y ?? this.y
+  }
 }

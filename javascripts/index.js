@@ -135,6 +135,7 @@ window.addEventListener('load', () => {
     preencherCampoDoFormularioDesenharCircunferencia({ raio: event.target.value })
   })
   document.getElementById('confirmar-transformacao').addEventListener('click', () => {
+
     executarOperacaoEscolhidaEmFormulario(operacao, 'transformacoes-geometricas')
   })
   document.getElementById('confirmar-rotacao').addEventListener('click', () => {
@@ -259,7 +260,14 @@ function preencherCampoDoFormularioDesenharCircunferencia(campo) {
 }
 
 function executarOperacaoEscolhidaEmFormulario(operacao, formulario) {
-  const informacoes = formularioController.obterFormulario(formulario)
+  const informacoes = obterInformacoesParaOperacao(formulario)
   canvasController.executarOperacaoPorMeioDasInformacoes(operacao, informacoes)
   carregarMalhaDePixels()
+}
+
+function obterInformacoesParaOperacao(formulario) {
+  if (formulario !== 'transformacoes-geometricas') return formularioController.obterFormulario(formulario)
+  if (!estruturaAtual || !idEstruturaAtual) return {}
+
+  return { ...formularioController.obterFormulario(formulario), estruturaAtual, idEstruturaAtual }
 }

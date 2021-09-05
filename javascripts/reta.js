@@ -1,12 +1,12 @@
-import Estrutura from "./estrutura.js"
+import Estrutura from './estrutura.js'
 
 export default class Reta extends Estrutura {
   pontoInicial
   pontoFinal
 
-  constructor(pontoInicial, pontoFinal) {
+  constructor() {
     super()
-    this.pontoInicial = pontoInicial
-    this.pontoFinal = pontoFinal
+    this.pontoInicial = null
+    this.pontoFinal = null
   }
 }
