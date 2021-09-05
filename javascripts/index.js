@@ -186,7 +186,7 @@ function gerarColunaEm(posicao) {
 
 function gerarPixel(pixel) {
   const pixelGerado = document.createElement('div')
-  pixelGerado.className = `pixel ${pixel.selecionado ? 'selected' : ''}`
+  pixelGerado.className = `pixel ${pixel.selecionado && pixel.visivel ? 'selected' : ''}`
   pixelGerado.dataset.x = pixel.x
   pixelGerado.dataset.y = pixel.y
   if (pixel.estrutura) {

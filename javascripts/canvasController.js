@@ -158,6 +158,20 @@ export default class CanvasController {
     this._atualizarCanvasComNovaEstrutura(this._circunferencias[this._circunferencias.length - 1])
   }
 
+  _recorteCohenSutherland(informacoes) {
+    if (!('limiteSuperior' in informacoes) || !('limiteInferior' in informacoes)) return false
+
+    algoritmos.recorteCohenSutherland(informacoes.limiteInferior, informacoes.limiteInferior, this._retas)
+    this._atualizarRetasNoCanvas()
+  }
+
+  _recorteCohenSutherland(informacoes) {
+    if (!('limiteSuperior' in informacoes) || !('limiteInferior' in informacoes)) return false
+
+    algoritmos.recorteLiangBarsky(informacoes.limiteInferior, informacoes.limiteInferior, this._retas)
+    this._atualizarRetasNoCanvas()
+  }
+
   _atualizarCanvasComNovaEstrutura(estrutura) {
     if (!('pixels' in estrutura)) return
 
@@ -166,6 +180,11 @@ export default class CanvasController {
 
       this._canvas.pixels[pixel.x][pixel.y] = { ...pixel }
     });
+  }
+
+  _atualizarRetasNoCanvas() {
+    for (let i = 0; i < this._retas.length; i++)
+      this._retas[i].pixels.forEach(pixel => this._canvas.pixels[pixel.x][pixel.y] = { ...pixel });
   }
 
   _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {
