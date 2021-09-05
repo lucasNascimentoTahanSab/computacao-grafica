@@ -45,11 +45,11 @@
         </div>
         <span class="navbar__title">Preencha os dados necessários para a operação:</span>
         <ul class="navbar__options">
-          <li class="navbar__options--option clickable">
+          <li class="navbar__options--option">
             <label for="fator-transformacao-x">Fator de transformação em x:</label>
             <input class="input" type="text" id="fator-transformacao-x">
           </li>
-          <li class="navbar__options--option clickable">
+          <li class="navbar__options--option">
             <label for="fator-transformacao-y">Fator de transformação em y:</label>
             <input class="input" type="text" id="fator-transformacao-y">
           </li>
@@ -65,16 +65,36 @@
         </div>
         <span class="navbar__title">Preencha os dados necessários para a operação:</span>
         <ul class="navbar__options">
-          <li class="navbar__options--option clickable">
+          <li class="navbar__options--option">
             <label for="angulacao">Angulação da rotação:</label>
             <div>
-              <input class="input" type="text" id="angulacao">
+              <input class="input large" type="text" id="angulacao">
               <span>°</span>
             </div>
           </li>
         </ul>
         <div class="navbar__buttons">
           <button class="navbar__confirmation-button" id="confirmar-rotacao">Confirmar</button>
+        </div>
+      </nav>
+      <nav class="navbar navbar--closed" id="transformacao-geometrica-fatores-reflexao">
+        <div class="navbar__buttons">
+          <img class="clickable" src="./sources/voltar.svg" id="transformacao-geometrica-fatores-reflexao-para-opcoes">
+          <img class="clickable" src="./sources/home.svg" id="transformacao-geometrica-fatores-reflexao-para-home">
+        </div>
+        <span class="navbar__title">Preencha os dados necessários para a operação:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option">
+            <label for="refletir-em-x">Refletir em relação ao eixo x:</label>
+            <input class="input" type="checkbox" id="refletir-em-x">
+          </li>
+          <li class="navbar__options--option">
+            <label for="refletir-em-y">Refletir em relação ao eixo y:</label>
+            <input class="input" type="checkbox" id="refletir-em-y">
+          </li>
+        </ul>
+        <div class="navbar__buttons">
+          <button class="navbar__confirmation-button" id="confirmar-reflexao">Confirmar</button>
         </div>
       </nav>
       <nav class="navbar navbar--closed" id="desenhar-reta-opcoes">
@@ -94,7 +114,7 @@
         </div>
         <span class="navbar__title">Preencha os dados necessários para a operação:</span>
         <ul class="navbar__options">
-          <li class="navbar__options--option clickable">
+          <li class="navbar__options--option">
             <span class="input__name">Ponto incial:</span>
             <div>
               <label for="x-inicial-reta">x:</label>
@@ -105,7 +125,7 @@
               <input class="input" type="text" id="y-inicial-reta">
             </div>
           </li>
-          <li class="navbar__options--option clickable">
+          <li class="navbar__options--option">
             <span class="input__name">Ponto final:</span>
             <div>
               <label for="x-final-reta">x:</label>

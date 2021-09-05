@@ -1,22 +1,34 @@
-import Canvas from './canvas.js';
+import Canvas from './canvas.js'
 import Pixel from './pixel.js'
+import algoritmos from './algoritmos.js'
 
 const _calcularDimensoesPixel = (canvas, zoom) => [canvas.altura * zoom, canvas.comprimento * zoom]
 const _calcularQuantidadePixels = (canvas, alturaPixel, larguraPixel) => [canvas.comprimento / alturaPixel, canvas.altura / larguraPixel]
+const _obterGrausEmRadianos = graus => graus * Math.PI / 180
 
 export default class CanvasController {
   _canvas
+  _retas
+  _circunferencias
+  _operacoes
 
   constructor() {
     this._canvas = new Canvas
+    this._retas = []
+    this._circunferencias = []
+    this._operacoes = {
+      'translacao': this._transladarElementos.bind(this),
+      'rotacao': this._rotacionarElementos.bind(this),
+      'escala': this._escalarElementos.bind(this),
+      'reflexao': this._refletirElementos.bind(this),
+      'dda': this._desenharRetaComAlgoritmoDDA.bind(this),
+      'bresenham': this._desenharRetaComAlgoritmoBresenham.bind(this),
+      'desenhar-circunferencia': this._desenharCircunferencia.bind(this)
+    }
   }
 
-  get quantidadePixelsHorizontal() {
-    return this._canvas.pixels.length
-  }
-
-  get quantidadePixelsVertical() {
-    return this._canvas.pixels[0].length
+  get matrizPixels() {
+    return this._canvas.pixels
   }
 
   carregarCanvas() {
@@ -28,8 +40,10 @@ export default class CanvasController {
     )
   }
 
-  obterPixelNasCoordenadas(x, y) {
-    return this._canvas.pixels[x][y]
+  executarOperacaoPorMeioDasInformacoes(operacao, informacoes) {
+    if (!(operacao in this._operacoes)) return
+
+    return this._operacoes[operacao](informacoes)
   }
 
   _gerarMalhaDePixelsAPartirDasInformacoes(quantidade, dimensoes) {
@@ -43,5 +57,122 @@ export default class CanvasController {
     }
 
     return pixels
+  }
+
+  _transladarElementos(informacoes) {
+    if (!('fatorTransformacaoEmX' in informacoes) || !('fatorTransformacaoEmY' in informacoes))
+      return false
+
+    const fatorTransformacaoEmX = parseFloat(informacoes.fatorTransformacaoEmX)
+    const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
+    const matrizTransformacao = this._obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY)
+    this._canvas.pixels = algoritmos.transladarElementos(matrizTransformacao, this._canvas)
+  }
+
+  _rotacionarElementos(informacoes) {
+    if (!('angulacaoDaRotacao' in informacoes))
+      return false
+
+    const angulacaoDaRotacao = informacoes.angulacaoDaRotacao
+    const matrizTransformacao = this._obterMatrizTransformacaoRotacao(angulacaoDaRotacao)
+    this._canvas.pixels = algoritmos.rotacionarElementos(matrizTransformacao, this._canvas)
+  }
+
+  _escalarElementos(informacoes) {
+    if (!('fatorTransformacaoEmX' in informacoes) || !('fatorTransformacaoEmY' in informacoes))
+      return false
+
+    const fatorTransformacaoEmX = parseFloat(informacoes.fatorTransformacaoEmX)
+    const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
+    const matrizTransformacao = this._obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY)
+    this._canvas.pixels = algoritmos.escalarElementos(matrizTransformacao, this._canvas)
+  }
+
+  _refletirElementos(informacoes) {
+    if (!('refletirEmX' in informacoes) || !('refletirEmY' in informacoes))
+      return false
+
+    const matrizTransformacao = this._obterMatrizTransformacaoReflexao(informacoes.refletirEmX, informacoes.refletirEmY)
+    this._canvas.pixels = algoritmos.refletirElementos(matrizTransformacao, this._canvas)
+  }
+
+  _desenharRetaComAlgoritmoDDA(informacoes) {
+    if (
+      !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
+      !('coordenadaXInicial' in informacoes) || !('coordenadaYInicial' in informacoes)
+    )
+      return false
+
+    algoritmos.EstruturaAtual.estrutura = 'reta'
+    algoritmos.EstruturaAtual.id = this._retas.length + ''
+    const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
+    const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
+    const estrutura = algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas)
+    this._canvas = estrutura.canvas
+    this._retas.push(estrutura.reta)
+  }
+
+  _desenharRetaComAlgoritmoBresenham(informacoes) {
+    if (
+      !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
+      !('coordenadaXInicial' in informacoes) || !('coordenadaYInicial' in informacoes)
+    )
+      return false
+
+    algoritmos.EstruturaAtual.estrutura = 'reta'
+    algoritmos.EstruturaAtual.id = this._retas.length + ''
+    const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
+    const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
+    const estrutura = algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas)
+    this._canvas = estrutura.canvas
+    this._retas.push(estrutura.reta)
+  }
+
+  _desenharCircunferencia(informacoes) {
+    if (
+      !('coordenadaXCentral' in informacoes) || !('coordenadaYCentral' in informacoes) ||
+      !('raio' in informacoes)
+    )
+      return false
+
+    algoritmos.EstruturaAtual.estrutura = 'circunferencia'
+    algoritmos.EstruturaAtual.id = this._circunferencias.length + ''
+    const pixelCentral = new Pixel({ x: parseFloat(informacoes.coordenadaXCentral), y: parseFloat(informacoes.coordenadaYCentral) })
+    const raio = informacoes.raio
+    const estrutura = algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas)
+    this._canvas = estrutura.canvas
+    this._circunferencias.push(estrutura.circunferencia)
+  }
+
+  _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {
+    return [
+      [1, 0, fatorTransformacaoEmX],
+      [0, 1, fatorTransformacaoEmY],
+      [0, 0, 1],
+    ]
+  }
+
+  _obterMatrizTransformacaoRotacao(angulacaoDaRotacao) {
+    return [
+      [Math.cos(_obterGrausEmRadianos(angulacaoDaRotacao)), -Math.sin(_obterGrausEmRadianos(angulacaoDaRotacao)), 0],
+      [Math.sin(_obterGrausEmRadianos(angulacaoDaRotacao)), Math.cos(_obterGrausEmRadianos(angulacaoDaRotacao)), 0],
+      [0, 0, 1]
+    ]
+  }
+
+  _obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY) {
+    return [
+      [fatorTransformacaoEmX, 0, 0],
+      [0, fatorTransformacaoEmY, 0],
+      [0, 0, 1]
+    ]
+  }
+
+  _obterMatrizTransformacaoReflexao(eixoX, eixoY) {
+    return [
+      [eixoY ? -1 : 1, 0, 0],
+      [0, eixoX ? -1 : 1, 0],
+      [0, 0, 1]
+    ]
   }
 }
