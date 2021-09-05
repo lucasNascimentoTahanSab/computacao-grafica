@@ -185,15 +185,14 @@ h1 {
   height: 100%;
   border: 1px solid #1234;
   border-collapse: collapse;
-  cursor: pointer;
-}
-
-.pixel:hover {
-  background-color: #1234;
 }
 
 .selected {
   background-color: #1234;
+}
+
+.highlighted {
+  background-color: #dd3636;
 }
 
 .clickable {

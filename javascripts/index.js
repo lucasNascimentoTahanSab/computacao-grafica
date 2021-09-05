@@ -5,6 +5,8 @@ const canvasController = new CanvasController
 const formularioController = new FormularioController
 
 let operacao = ''
+let estruturaAtual = ''
+let idEstruturaAtual = ''
 
 window.addEventListener('load', () => {
   canvasController.carregarCanvas()
@@ -147,6 +149,9 @@ window.addEventListener('load', () => {
   document.getElementById('confirmar-circunferencia').addEventListener('click', () => {
     executarOperacaoEscolhidaEmFormulario(operacao, 'desenhar-circunferencia')
   })
+  window.addEventListener('click', event => {
+    if (!document.getElementById('canvas').contains(event.target)) removerDestaquesDasEstruturas()
+  })
 })
 
 function carregarMalhaDePixels() {
@@ -163,17 +168,10 @@ function carregarMalhaDePixels() {
 function inserirPixelsEm(pixels, coluna) {
   for (let y = 0; y < pixels.length; y++) {
     const pixel = gerarPixel(pixels[y])
-    pixel.addEventListener('click', apagarPixel)
     coluna.appendChild(pixel)
   }
 
   return coluna
-}
-
-function apagarPixel(pixel) {
-  if (pixel.target.classList.contains('selected')) pixel.target.classList.remove('selected')
-
-  canvasController.apagarPixel(pixel.target.dataset.x, pixel.target.dataset.y)
 }
 
 function gerarColunaEm(posicao) {
@@ -189,8 +187,49 @@ function gerarPixel(pixel) {
   pixelGerado.className = `pixel ${pixel.selecionado ? 'selected' : ''}`
   pixelGerado.dataset.x = pixel.x
   pixelGerado.dataset.y = pixel.y
+  if (pixel.estrutura) {
+    pixelGerado.classList.add('clickable')
+    pixelGerado.dataset.estrutura = pixel.estrutura
+    pixelGerado.dataset.idEstrutura = pixel.idEstrutura
+    pixelGerado.addEventListener('mouseover', controlarDestaqueDaEstrutura)
+    pixelGerado.addEventListener('mouseleave', controlarDestaqueDaEstrutura)
+    pixelGerado.addEventListener('click', selecionarEstrutura)
+  }
 
   return pixelGerado
+}
+
+function controlarDestaqueDaEstrutura(pixel) {
+  if (!pixel.target.dataset.estrutura) return
+
+  const estrutura = pixel.target.dataset.estrutura
+  const idEstrutura = pixel.target.dataset.idEstrutura
+  const pixelsDaEstrutura = document.querySelectorAll(`[data-estrutura="${estrutura}"][data-id-estrutura="${idEstrutura}"]`)
+  Array.from(pixelsDaEstrutura).forEach(pixel => {
+    if (idEstrutura === idEstruturaAtual && estrutura === estruturaAtual) return
+
+    if (pixel.classList.contains('highlighted')) pixel.classList.remove('highlighted')
+    else pixel.classList.add('highlighted')
+  })
+}
+
+function selecionarEstrutura(pixel) {
+  removerDestaquesDasEstruturas()
+  destacarEstruturaDoPixel(pixel)
+}
+
+function removerDestaquesDasEstruturas() {
+  estruturaAtual = ''
+  idEstruturaAtual = ''
+  const estruturas = document.getElementsByClassName('highlighted')
+  Array.from(estruturas).forEach(pixel => pixel.classList.remove('highlighted'))
+}
+
+function destacarEstruturaDoPixel(pixel) {
+  estruturaAtual = pixel.target.dataset.estrutura
+  idEstruturaAtual = pixel.target.dataset.idEstrutura
+  const pixelsDaEstrutura = document.querySelectorAll(`[data-estrutura="${estruturaAtual}"][data-id-estrutura="${idEstruturaAtual}"]`)
+  Array.from(pixelsDaEstrutura).forEach(pixel => pixel.classList.add('highlighted'))
 }
 
 function fecharGuiaLateral(nomeGuia) {

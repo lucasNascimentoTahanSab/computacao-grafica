@@ -8,10 +8,14 @@ const _obterGrausEmRadianos = graus => graus * Math.PI / 180
 
 export default class CanvasController {
   _canvas
+  _retas
+  _circunferencias
   _operacoes
 
   constructor() {
     this._canvas = new Canvas
+    this._retas = []
+    this._circunferencias = []
     this._operacoes = {
       'translacao': this._transladarElementos.bind(this),
       'rotacao': this._rotacionarElementos.bind(this),
@@ -40,12 +44,6 @@ export default class CanvasController {
     if (!(operacao in this._operacoes)) return
 
     return this._operacoes[operacao](informacoes)
-  }
-
-  apagarPixel(x, y) {
-    if ((x > 0 && x < this._canvas.pixels.length) && (y > 0 && y < this._canvas.pixels[0].length)) return
-
-    this._canvas.pixels[x][y].selecionado = false
   }
 
   _gerarMalhaDePixelsAPartirDasInformacoes(quantidade, dimensoes) {
@@ -105,9 +103,13 @@ export default class CanvasController {
     )
       return false
 
+    algoritmos.EstruturaAtual.estrutura = 'reta'
+    algoritmos.EstruturaAtual.id = this._retas.length + ''
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    this._canvas = algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas);
+    const estrutura = algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas)
+    this._canvas = estrutura.canvas
+    this._retas.push(estrutura.reta)
   }
 
   _desenharRetaComAlgoritmoBresenham(informacoes) {
@@ -117,9 +119,13 @@ export default class CanvasController {
     )
       return false
 
+    algoritmos.EstruturaAtual.estrutura = 'reta'
+    algoritmos.EstruturaAtual.id = this._retas.length + ''
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    this._canvas = algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas)
+    const estrutura = algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas)
+    this._canvas = estrutura.canvas
+    this._retas.push(estrutura.reta)
   }
 
   _desenharCircunferencia(informacoes) {
@@ -129,9 +135,13 @@ export default class CanvasController {
     )
       return false
 
+    algoritmos.EstruturaAtual.estrutura = 'circunferencia'
+    algoritmos.EstruturaAtual.id = this._circunferencias.length + ''
     const pixelCentral = new Pixel({ x: parseFloat(informacoes.coordenadaXCentral), y: parseFloat(informacoes.coordenadaYCentral) })
     const raio = informacoes.raio
-    this._canvas = algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas)
+    const estrutura = algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas)
+    this._canvas = estrutura.canvas
+    this._circunferencias.push(estrutura.circunferencia)
   }
 
   _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {

@@ -1,3 +1,11 @@
+import Reta from './reta.js'
+import Circunferencia from './circunferencia.js'
+
+class EstruturaAtual {
+  static estrutura
+  static id
+}
+
 function transladarElementos(matrizTransformacao, canvas) {
   const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
   for (let x = 0; x < canvas.pixels.length; x++) {
@@ -75,7 +83,10 @@ function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
   const passos = _obterQuantidadePassos(deltaYAbsoluto, deltaXAbsoluto)
   const [incrementoEmY, incrementoEmX] = _obterIncrementos(deltaY, deltaX, passos)
 
-  return _calcularPontosDaReta(pixelInicial, [incrementoEmY, incrementoEmX], passos, canvas)
+  return {
+    canvas: _calcularPontosDaReta(pixelInicial, [incrementoEmY, incrementoEmX], passos, canvas),
+    reta: new Reta(pixelInicial, pixelFinal)
+  }
 }
 
 function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
@@ -87,19 +98,28 @@ function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
   const passos = _obterQuantidadePassos(deltaYAbsoluto, deltaXAbsoluto)
 
   return deltaYAbsoluto < deltaXAbsoluto
-    ? _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(
-      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
-    )
-    : _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(
-      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
-    )
+    ? {
+      canvas: _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(
+        pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+      ),
+      reta: new Reta(pixelInicial, pixelFinal)
+    }
+    : {
+      canvas: _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(
+        pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+      ),
+      reta: new Reta(pixelInicial, pixelFinal)
+    }
 }
 
 function desenharCircunferencia(pixelCentral, raio, canvas) {
   const pInicial = _obterPInicialCircunferencia(raio)
   const incrementos = { x: 0, y: raio }
 
-  return _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas)
+  return {
+    canvas: _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas),
+    circunferencia: new Circunferencia(pixelCentral, raio)
+  }
 }
 
 function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
@@ -107,7 +127,11 @@ function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   const [incrementoEmY, incrementoEmX] = incrementos
 
   for (let i = 0; i < passos + 1; i++) {
-    canvas.pixels[Math.round(x)][Math.round(y)].selecionado = true
+    const xArredondado = Math.round(x)
+    const yArredondado = Math.round(y)
+    canvas.pixels[xArredondado][yArredondado].selecionado = true
+    canvas.pixels[xArredondado][yArredondado].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[xArredondado][yArredondado].idEstrutura = EstruturaAtual.id
     x += incrementoEmX
     y += incrementoEmY
   }
@@ -121,6 +145,8 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, i
 
   for (let i = 0; i < passos + 1; i++) {
     canvas.pixels[x][y].selecionado = true
+    canvas.pixels[x][y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[x][y].idEstrutura = EstruturaAtual.id
     x += incrementoEmX
 
     if (p > 0) {
@@ -140,6 +166,8 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, i
 
   for (let i = 0; i < passos + 1; i++) {
     canvas.pixels[x][y].selecionado = true
+    canvas.pixels[x][y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[x][y].idEstrutura = EstruturaAtual.id
     y += incrementoEmY
 
     if (p > 0) {
@@ -173,22 +201,46 @@ function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   const comprimento = canvas.pixels.length - 1
   const altura = canvas.pixels[0].length - 1
 
-  if (pixelCentral.x + incrementos.x < comprimento && pixelCentral.y + incrementos.y < altura)
+  if (pixelCentral.x + incrementos.x <= comprimento && pixelCentral.y + incrementos.y <= altura) {
     canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y + incrementos.y].selecionado = true
-  if (pixelCentral.x - incrementos.x > 0 && pixelCentral.y + incrementos.y < altura)
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y + incrementos.y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y + incrementos.y].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x - incrementos.x >= 0 && pixelCentral.y + incrementos.y <= altura) {
     canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y + incrementos.y].selecionado = true
-  if (pixelCentral.x + incrementos.x < comprimento && pixelCentral.y - incrementos.y > 0)
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y + incrementos.y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y + incrementos.y].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x + incrementos.x <= comprimento && pixelCentral.y - incrementos.y >= 0) {
     canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y - incrementos.y].selecionado = true
-  if (pixelCentral.x - incrementos.x > 0 && pixelCentral.y - incrementos.y > 0)
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y - incrementos.y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x + incrementos.x][pixelCentral.y - incrementos.y].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x - incrementos.x >= 0 && pixelCentral.y - incrementos.y >= 0) {
     canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y - incrementos.y].selecionado = true
-  if (pixelCentral.x + incrementos.y < comprimento && pixelCentral.y + incrementos.x < altura)
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y - incrementos.y].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x - incrementos.x][pixelCentral.y - incrementos.y].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x + incrementos.y <= comprimento && pixelCentral.y + incrementos.x <= altura) {
     canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y + incrementos.x].selecionado = true
-  if (pixelCentral.x - incrementos.y > 0 && pixelCentral.y + incrementos.x < altura)
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y + incrementos.x].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y + incrementos.x].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x - incrementos.y >= 0 && pixelCentral.y + incrementos.x <= altura) {
     canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y + incrementos.x].selecionado = true
-  if (pixelCentral.x + incrementos.y < comprimento && pixelCentral.y - incrementos.x > 0)
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y + incrementos.x].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y + incrementos.x].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x + incrementos.y <= comprimento && pixelCentral.y - incrementos.x >= 0) {
     canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y - incrementos.x].selecionado = true
-  if (pixelCentral.x - incrementos.y > 0 && pixelCentral.y - incrementos.x > 0)
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y - incrementos.x].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x + incrementos.y][pixelCentral.y - incrementos.x].idEstrutura = EstruturaAtual.id
+  }
+  if (pixelCentral.x - incrementos.y >= 0 && pixelCentral.y - incrementos.x >= 0) {
     canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y - incrementos.x].selecionado = true
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y - incrementos.x].estrutura = EstruturaAtual.estrutura
+    canvas.pixels[pixelCentral.x - incrementos.y][pixelCentral.y - incrementos.x].idEstrutura = EstruturaAtual.id
+  }
 
   return canvas
 }
@@ -239,5 +291,6 @@ export default {
   refletirElementos,
   desenharRetaComAlgoritmoDDA,
   desenharRetaComAlgoritmoBresenham,
-  desenharCircunferencia
+  desenharCircunferencia,
+  EstruturaAtual
 }
