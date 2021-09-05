@@ -4,9 +4,9 @@ export default class Circunferencia extends Estrutura {
   pontoCentral
   raio
 
-  constructor(pontoCentral, raio) {
+  constructor() {
     super()
-    this.pontoCentral = pontoCentral
-    this.raio = raio
+    this.pontoCentral = null
+    this.raio = 0
   }
 }

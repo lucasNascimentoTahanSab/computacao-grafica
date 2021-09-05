@@ -7,75 +7,85 @@ class EstruturaAtual {
   static id
 }
 
-function transladarElementos(matrizTransformacao, canvas) {
-  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
-  for (let x = 0; x < canvas.pixels.length; x++) {
-    for (let y = 0; y < canvas.pixels[x].length; y++) {
-      const matrizPonto = [x, y, 1]
-      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+function transladarEstrutura(matrizTransformacao, estrutura, canvas) {
+  for (let i = 0; i < estrutura.pixels.length; i++) {
+    const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
+    canvas.pixels[antigoX][antigoY] = new Pixel({ ...canvas.pixels[antigoX][antigoY], estrutura: '', idEstrutura: '', selecionado: false })
 
-      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
-      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+    const matrizPonto = [antigoX, antigoY, 1]
+    const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
 
-      novaMatrizPixels[novoX][novoY].selecionado = true
+    if ((novoX < 0 || novoX >= canvas.pixels.length) || (novoY < 0 || novoY >= canvas.pixels[0].length)) {
+      estrutura.pixels.splice(i--, 1)
+      continue
     }
-  }
 
-  return novaMatrizPixels
+    estrutura.pixels[i].x = novoX
+    estrutura.pixels[i].y = novoY
+    canvas.pixels[novoX][novoY] = estrutura.pixels[i]
+  }
 }
 
-function rotacionarElementos(matrizTransformacao, canvas) {
-  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
-  for (let x = 0; x < canvas.pixels.length; x++) {
-    for (let y = 0; y < canvas.pixels[x].length; y++) {
-      const matrizPonto = [x, y, 1]
-      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+function rotacionarEstrutura(matrizTransformacao, estrutura, canvas) {
+  for (let i = 0; i < estrutura.pixels.length; i++) {
+    const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
+    canvas.pixels[antigoX][antigoY] = new Pixel({ ...canvas.pixels[antigoX][antigoY], estrutura: '', idEstrutura: '', selecionado: false })
 
-      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
-      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+    const matrizPonto = [antigoX, antigoY, 1]
+    const [xResultante, yResultante] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+    const [novoX, novoY] = [Math.round(xResultante), Math.round(yResultante)]
 
-      novaMatrizPixels[Math.round(novoX)][Math.round(novoY)].selecionado = true
+    if ((novoX < 0 || novoX >= canvas.pixels.length) || (novoY < 0 || novoY >= canvas.pixels[0].length)) {
+      estrutura.pixels.splice(i--, 1)
+      continue
     }
-  }
 
-  return novaMatrizPixels
+    estrutura.pixels[i].x = novoX
+    estrutura.pixels[i].y = novoY
+    canvas.pixels[novoX][novoY] = estrutura.pixels[i]
+  }
 }
 
-function escalarElementos(matrizTransformacao, canvas) {
-  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
-  for (let x = 0; x < canvas.pixels.length; x++) {
-    for (let y = 0; y < canvas.pixels[x].length; y++) {
-      const matrizPonto = [x, y, 1]
-      const [novoX, novoY] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+function escalarEstrutura(matrizTransformacao, estrutura, canvas) {
+  for (let i = 0; i < estrutura.pixels.length; i++) {
+    const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
+    canvas.pixels[antigoX][antigoY] = new Pixel({ ...canvas.pixels[antigoX][antigoY], estrutura: '', idEstrutura: '', selecionado: false })
 
-      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
-      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+    const matrizPonto = [antigoX, antigoY, 1]
+    const [xResultante, yResultante] = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+    const [novoX, novoY] = [Math.round(xResultante), Math.round(yResultante)]
 
-      novaMatrizPixels[novoX][novoY].selecionado = true
+    if ((novoX < 0 || novoX >= canvas.pixels.length) || (novoY < 0 || novoY >= canvas.pixels[0].length)) {
+      estrutura.pixels.splice(i--, 1)
+      continue
     }
-  }
 
-  return novaMatrizPixels
+    estrutura.pixels[i].x = novoX
+    estrutura.pixels[i].y = novoY
+    canvas.pixels[novoX][novoY] = estrutura.pixels[i]
+  }
 }
 
-function refletirElementos(matrizTransformacao, canvas) {
-  const novaMatrizPixels = _obterNovaMatrizPixels(canvas)
-  for (let x = 0; x < canvas.pixels.length; x++) {
-    for (let y = 0; y < canvas.pixels[x].length; y++) {
-      const matrizPonto = [x, y, 1]
-      const matrizResultante = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
-      const [xResultante, yResultante] = [matrizResultante[0], matrizResultante[1]]
-      const novoX = xResultante < 0 ? xResultante + (canvas.pixels.length - 1) : xResultante
-      const novoY = yResultante < 0 ? yResultante + (canvas.pixels[x].length - 1) : yResultante
+function refletirEstrutura(matrizTransformacao, estrutura, canvas) {
+  for (let i = 0; i < estrutura.pixels.length; i++) {
+    const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
+    canvas.pixels[antigoX][antigoY] = new Pixel({ ...canvas.pixels[antigoX][antigoY], estrutura: '', idEstrutura: '', selecionado: false })
 
-      if (novoX >= canvas.pixels.length || novoY >= canvas.pixels[x].length) break
-      if ((novoX < 0 || novoY < 0) || (!canvas.pixels[x][y].selecionado)) continue
+    const matrizPonto = [antigoX, antigoY, 1]
+    const matrizResultante = _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao)
+    const [xResultante, yResultante] = [matrizResultante[0], matrizResultante[1]]
+    const novoX = xResultante < 0 ? xResultante + (canvas.pixels.length - 1) : xResultante === 0 && matrizTransformacao[0][0] < 0 ? canvas.pixels.length - 1 : xResultante
+    const novoY = yResultante < 0 ? yResultante + (canvas.pixels[0].length - 1) : yResultante === 0 && matrizTransformacao[1][1] < 0 ? canvas.pixels[0].length - 1 : yResultante
 
-      novaMatrizPixels[novoX][novoY].selecionado = true
+    if ((novoX < 0 || novoX >= canvas.pixels.length) || (novoY < 0 || novoY >= canvas.pixels[0].length)) {
+      estrutura.pixels.splice(i--, 1)
+      continue
     }
-  }
 
-  return novaMatrizPixels
+    estrutura.pixels[i].x = novoX
+    estrutura.pixels[i].y = novoY
+    canvas.pixels[novoX][novoY] = estrutura.pixels[i]
+  }
 }
 
 function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
@@ -84,7 +94,7 @@ function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
   const passos = _obterQuantidadePassos(deltaYAbsoluto, deltaXAbsoluto)
   const [incrementoEmY, incrementoEmX] = _obterIncrementos(deltaY, deltaX, passos)
 
-  return _calcularPontosDaReta(pixelInicial, pixelFinal, [incrementoEmY, incrementoEmX], passos, canvas)
+  return _calcularPontosDaReta(pixelInicial, [incrementoEmY, incrementoEmX], passos, canvas)
 }
 
 function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
@@ -97,10 +107,10 @@ function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
 
   return deltaYAbsoluto < deltaXAbsoluto
     ? _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(
-      pixelInicial, pixelFinal, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
     )
     : _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(
-      pixelInicial, pixelFinal, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
+      pixelInicial, pInicial, [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo], passos, canvas
     )
 }
 
@@ -111,10 +121,10 @@ function desenharCircunferencia(pixelCentral, raio, canvas) {
   return _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas)
 }
 
-function _calcularPontosDaReta(pixelInicial, pixelFinal, incrementos, passos, canvas) {
+function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
-  const reta = new Reta(pixelInicial, pixelFinal)
   const [incrementoEmY, incrementoEmX] = incrementos
+  const reta = new Reta()
 
   for (let i = 0; i < passos + 1; i++) {
     const xArredondado = Math.round(x)
@@ -128,10 +138,10 @@ function _calcularPontosDaReta(pixelInicial, pixelFinal, incrementos, passos, ca
   return reta
 }
 
-function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, pixelFinal, p, incrementos, passos, canvas) {
+function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
-  const reta = new Reta(pixelInicial, pixelFinal)
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
+  const reta = new Reta()
 
   for (let i = 0; i < passos + 1; i++) {
     const pixel = canvas.pixels[x][y]
@@ -149,10 +159,10 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, pixe
   return reta
 }
 
-function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, pixelFinal, p, incrementos, passos, canvas) {
+function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
-  const reta = new Reta(pixelInicial, pixelFinal)
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
+  const reta = new Reta()
 
   for (let i = 0; i < passos + 1; i++) {
     const pixel = canvas.pixels[x][y]
@@ -171,7 +181,7 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, pixe
 }
 
 function _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, p, canvas) {
-  const circunferencia = new Circunferencia(pixelCentral, incrementos.y)
+  const circunferencia = new Circunferencia()
 
   while (incrementos.x < incrementos.y) {
     circunferencia.pixels = circunferencia.pixels.concat(_desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas))
@@ -229,19 +239,6 @@ function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   return pontos
 }
 
-function _obterNovaMatrizPixels(canvas) {
-  const novaMatrizPixels = []
-  for (let i = 0; i < canvas.pixels.length; i++) {
-    novaMatrizPixels[i] = canvas.pixels[i].map(pixel => {
-      const novoPixel = { ...pixel }
-      novoPixel.selecionado = false
-      return novoPixel
-    })
-  }
-
-  return novaMatrizPixels
-}
-
 function _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao) {
   if (matrizPonto.length != matrizTransformacao.length) return []
 
@@ -269,10 +266,10 @@ const _obterIncrementosDeP = (deltaY, deltaX) => deltaY < deltaX
   : [2 * deltaX, 2 * (deltaX - deltaY)]
 
 export default {
-  transladarElementos,
-  rotacionarElementos,
-  escalarElementos,
-  refletirElementos,
+  transladarEstrutura,
+  rotacionarEstrutura,
+  escalarEstrutura,
+  refletirEstrutura,
   desenharRetaComAlgoritmoDDA,
   desenharRetaComAlgoritmoBresenham,
   desenharCircunferencia,
