@@ -150,7 +150,8 @@ window.addEventListener('load', () => {
     executarOperacaoEscolhidaEmFormulario(operacao, 'desenhar-circunferencia')
   })
   window.addEventListener('click', event => {
-    if (!document.getElementById('canvas').contains(event.target)) removerDestaquesDasEstruturas()
+    if (document.getElementById('main-page').contains(event.target) && !document.getElementById('canvas').contains(event.target))
+      removerDestaquesDasEstruturas()
   })
 })
 
@@ -188,6 +189,7 @@ function gerarPixel(pixel) {
   pixelGerado.dataset.x = pixel.x
   pixelGerado.dataset.y = pixel.y
   if (pixel.estrutura) {
+    if (pixel.estrutura === estruturaAtual && pixel.idEstrutura === idEstruturaAtual) pixelGerado.classList.add('highlighted')
     pixelGerado.classList.add('clickable')
     pixelGerado.dataset.estrutura = pixel.estrutura
     pixelGerado.dataset.idEstrutura = pixel.idEstrutura

@@ -107,9 +107,8 @@ export default class CanvasController {
     algoritmos.EstruturaAtual.id = this._retas.length + ''
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    const estrutura = algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas)
-    this._canvas = estrutura.canvas
-    this._retas.push(estrutura.reta)
+    this._retas.push(algoritmos.desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, this._canvas))
+    this._atualizarCanvasComNovaEstrutura(this._retas[this._retas.length - 1])
   }
 
   _desenharRetaComAlgoritmoBresenham(informacoes) {
@@ -123,9 +122,8 @@ export default class CanvasController {
     algoritmos.EstruturaAtual.id = this._retas.length + ''
     const pixelFinal = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
     const pixelInicial = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
-    const estrutura = algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas)
-    this._canvas = estrutura.canvas
-    this._retas.push(estrutura.reta)
+    this._retas.push(algoritmos.desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, this._canvas))
+    this._atualizarCanvasComNovaEstrutura(this._retas[this._retas.length - 1])
   }
 
   _desenharCircunferencia(informacoes) {
@@ -139,9 +137,18 @@ export default class CanvasController {
     algoritmos.EstruturaAtual.id = this._circunferencias.length + ''
     const pixelCentral = new Pixel({ x: parseFloat(informacoes.coordenadaXCentral), y: parseFloat(informacoes.coordenadaYCentral) })
     const raio = informacoes.raio
-    const estrutura = algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas)
-    this._canvas = estrutura.canvas
-    this._circunferencias.push(estrutura.circunferencia)
+    this._circunferencias.push(algoritmos.desenharCircunferencia(pixelCentral, parseFloat(raio), this._canvas))
+    this._atualizarCanvasComNovaEstrutura(this._circunferencias[this._circunferencias.length - 1])
+  }
+
+  _atualizarCanvasComNovaEstrutura(estrutura) {
+    if (!('pixels' in estrutura)) return
+
+    estrutura.pixels.forEach(pixel => {
+      if ((pixel.x < 0 || pixel.x > this._canvas.pixels.length) || (pixel.y < 0 || pixel.y > this._canvas.pixels[0].length)) return
+
+      this._canvas.pixels[pixel.x][pixel.y] = { ...pixel }
+    });
   }
 
   _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {
