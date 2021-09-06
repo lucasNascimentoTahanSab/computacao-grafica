@@ -11,8 +11,9 @@
   </head>
 
   <body>
-    <div class="container">
-      <nav class="navbar" id="home">
+    <div class="container no-select" id="container">
+      <div class="region-selected hidden" id="region-selected"></div>
+      <nav class="navbar scrollable" id="home">
         <span class="navbar__title">Selecione a operação desejada:</span>
         <ul class="navbar__options">
           <li class="navbar__options--option navbar__option--colored clickable" id="tranformacoes-geometricas">
@@ -23,6 +24,9 @@
           </li>
           <li class="navbar__options--option navbar__option--colored clickable" id="desenhar-circunferencia">
             Desenhar circunferência
+          </li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="recortes">
+            Recortes
           </li>
         </ul>
       </nav>
@@ -166,6 +170,17 @@
         <div class="navbar__buttons">
           <button class="navbar__confirmation-button" id="confirmar-circunferencia">Confirmar</button>
         </div>
+      </nav>
+      <nav class="navbar navbar--closed" id="recortes-opcoes">
+        <div class="navbar__buttons">
+          <img class="clickable" src="./sources/voltar.svg" id="recortes-opcoes-para-home">
+        </div>
+        <span class="navbar__title">Selecione o algoritmo desejado:</span>
+        <ul class="navbar__options">
+          <li class="navbar__options--option navbar__option--colored clickable" id="cohen-sutherland">Cohen-Sutherland
+          </li>
+          <li class="navbar__options--option navbar__option--colored clickable" id="liang-barsky">Liang-Barsky</li>
+        </ul>
       </nav>
       <main class="main-page" id="main-page">
         <section class="flex-center--vertical">

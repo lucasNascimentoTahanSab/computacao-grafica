@@ -24,7 +24,9 @@ export default class CanvasController {
       'reflexao': this._refletirElementos.bind(this),
       'dda': this._desenharRetaComAlgoritmoDDA.bind(this),
       'bresenham': this._desenharRetaComAlgoritmoBresenham.bind(this),
-      'desenhar-circunferencia': this._desenharCircunferencia.bind(this)
+      'desenhar-circunferencia': this._desenharCircunferencia.bind(this),
+      'cohen-sutherland': this._recorteCohenSutherland.bind(this),
+      'liang-barsky': this._recorteLiangBarsky.bind(this)
     }
     this._estruturas = {
       'reta': this._retas,
@@ -159,16 +161,28 @@ export default class CanvasController {
   }
 
   _recorteCohenSutherland(informacoes) {
-    if (!('limiteSuperior' in informacoes) || !('limiteInferior' in informacoes)) return false
+    if (
+      !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
+      !('coordenadaXInicial' in informacoes) || !('coordenadaYInicial' in informacoes)
+    )
+      return false
 
-    algoritmos.recorteCohenSutherland(informacoes.limiteInferior, informacoes.limiteInferior, this._retas)
+    const limiteInferior = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
+    const limiteSuperior = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
+    algoritmos.recorteCohenSutherland(limiteInferior, limiteSuperior, this._retas)
     this._atualizarRetasNoCanvas()
   }
 
-  _recorteCohenSutherland(informacoes) {
-    if (!('limiteSuperior' in informacoes) || !('limiteInferior' in informacoes)) return false
+  _recorteLiangBarsky(informacoes) {
+    if (
+      !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
+      !('coordenadaXInicial' in informacoes) || !('coordenadaYInicial' in informacoes)
+    )
+      return false
 
-    algoritmos.recorteLiangBarsky(informacoes.limiteInferior, informacoes.limiteInferior, this._retas)
+    const limiteInferior = new Pixel({ x: parseFloat(informacoes.coordenadaXFinal), y: parseFloat(informacoes.coordenadaYFinal) })
+    const limiteSuperior = new Pixel({ x: parseFloat(informacoes.coordenadaXInicial), y: parseFloat(informacoes.coordenadaYInicial) })
+    algoritmos.recorteLiangBarsky(limiteInferior, limiteSuperior, this._retas)
     this._atualizarRetasNoCanvas()
   }
 

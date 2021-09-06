@@ -7,6 +7,11 @@ const formularioController = new FormularioController
 let operacao = ''
 let estruturaAtual = ''
 let idEstruturaAtual = ''
+let emTelaDeRecorte = false
+let xInicialRecorte = 0
+let xFinalRecorte = 0
+let yInicialRecorte = 0
+let yFinalRecorte = 0
 
 window.addEventListener('load', () => {
   canvasController.carregarCanvas()
@@ -23,6 +28,11 @@ window.addEventListener('load', () => {
     fecharGuiaLateral('home')
     abrirGuiaLateral('desenhar-circunferencia-dados')
     registrarOperacaoEscolhida('desenhar-circunferencia')
+  })
+  document.getElementById('recortes').addEventListener('click', () => {
+    fecharGuiaLateral('home')
+    abrirGuiaLateral('recortes-opcoes')
+    registrarOperacaoEscolhida('recortes')
   })
   document.getElementById('translacao').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
@@ -53,6 +63,16 @@ window.addEventListener('load', () => {
     fecharGuiaLateral('desenhar-reta-opcoes')
     abrirGuiaLateral('desenhar-reta-pontos')
     registrarOperacaoEscolhida('bresenham')
+  })
+  document.getElementById('cohen-sutherland').addEventListener('click', () => {
+    alterarCursorParaSelecionarRecorte()
+    registrarOperacaoEscolhida('cohen-sutherland')
+    emTelaDeRecorte = true
+  })
+  document.getElementById('liang-barsky').addEventListener('click', () => {
+    alterarCursorParaSelecionarRecorte()
+    registrarOperacaoEscolhida('liang-barsky')
+    emTelaDeRecorte = true
   })
   document.getElementById('transformacao-geometrica-opcoes-para-home').addEventListener('click', () => {
     fecharGuiaLateral('transformacao-geometrica-opcoes')
@@ -98,6 +118,10 @@ window.addEventListener('load', () => {
     fecharGuiaLateral('desenhar-circunferencia-dados')
     abrirGuiaLateral('home')
   })
+  document.getElementById('recortes-opcoes-para-home').addEventListener('click', () => {
+    fecharGuiaLateral('recortes-opcoes')
+    abrirGuiaLateral('home')
+  })
   document.getElementById('fator-transformacao-x').addEventListener('input', event => {
     preencherCampoDoFormularioTransformacoesGeometricas({ fatorTransformacaoEmX: event.target.value })
   })
@@ -135,7 +159,6 @@ window.addEventListener('load', () => {
     preencherCampoDoFormularioDesenharCircunferencia({ raio: event.target.value })
   })
   document.getElementById('confirmar-transformacao').addEventListener('click', () => {
-
     executarOperacaoEscolhidaEmFormulario(operacao, 'transformacoes-geometricas')
   })
   document.getElementById('confirmar-rotacao').addEventListener('click', () => {
@@ -150,9 +173,33 @@ window.addEventListener('load', () => {
   document.getElementById('confirmar-circunferencia').addEventListener('click', () => {
     executarOperacaoEscolhidaEmFormulario(operacao, 'desenhar-circunferencia')
   })
-  window.addEventListener('click', event => {
-    if (document.getElementById('main-page').contains(event.target) && !document.getElementById('canvas').contains(event.target))
+  document.getElementById('main-page').addEventListener('click', event => {
+    if (!emTelaDeRecorte && !document.getElementById('canvas').contains(event.target))
       removerDestaquesDasEstruturas()
+  })
+  document.getElementById('canvas').addEventListener('mousedown', event => {
+    if (emTelaDeRecorte) {
+      esconderApresentarAreaSelecionada()
+      xInicialRecorte = event.clientX;
+      yInicialRecorte = event.clientY;
+      definirAreaSelecionada()
+    }
+  })
+  window.addEventListener('mousemove', event => {
+    if (emTelaDeRecorte) {
+      xFinalRecorte = event.clientX;
+      yFinalRecorte = event.clientY;
+      definirAreaSelecionada();
+    }
+  })
+  document.getElementById('canvas').addEventListener('mouseup', () => {
+    if (emTelaDeRecorte) {
+      esconderApresentarAreaSelecionada()
+      alterarCursorParaSelecionarRecorte()
+      obterLimitesRecorteAPartirDaSelecao()
+      executarOperacaoEscolhidaEmFormulario(operacao, 'recortes')
+      emTelaDeRecorte = false
+    }
   })
 })
 
@@ -235,6 +282,57 @@ function destacarEstruturaDoPixel(pixel) {
   Array.from(pixelsDaEstrutura).forEach(pixel => pixel.classList.add('highlighted'))
 }
 
+function esconderApresentarAreaSelecionada() {
+  const areaSelecionada = document.getElementById('region-selected')
+  if (areaSelecionada.classList.contains('hidden')) areaSelecionada.classList.remove('hidden')
+  else areaSelecionada.classList.add('hidden')
+}
+
+function definirPosicaoAreaSelecionada(event) {
+  const [x, y] = [event.clientX, event.clientY]
+  const areaSelecionada = document.getElementById('region-selected')
+  if (areaSelecionada.classList.contains('hidden')) areaSelecionada.classList.remove('hidden')
+  else areaSelecionada.classList.add('hidden')
+
+  areaSelecionada.style.left = x + 'px'
+  areaSelecionada.style.top = y + 'px'
+}
+
+function definirAreaSelecionada() {
+  const areaSelecionada = document.getElementById('region-selected')
+  const xMinimoRecorte = Math.min(xInicialRecorte, xFinalRecorte);
+  const xMaximoRecorte = Math.max(xInicialRecorte, xFinalRecorte);
+  const yMinimoRecorte = Math.min(yInicialRecorte, yFinalRecorte);
+  const yMaximoRecorte = Math.max(yInicialRecorte, yFinalRecorte);
+  areaSelecionada.style.left = xMinimoRecorte + 'px';
+  areaSelecionada.style.top = yMinimoRecorte + 'px';
+  areaSelecionada.style.width = xMaximoRecorte - xMinimoRecorte + 'px';
+  areaSelecionada.style.height = yMaximoRecorte - yMinimoRecorte + 'px';
+}
+
+function obterLimitesRecorteAPartirDaSelecao() {
+  const areaSelecionada = document.getElementById('region-selected')
+  const coordenadaXInicial = parseInt(areaSelecionada.style.left.replace('px'))
+  const coordenadaYInicial = parseInt(areaSelecionada.style.top.replace('px'))
+  const coordenadaXFinal = coordenadaXInicial + parseInt(areaSelecionada.style.width.replace('px'))
+  const coordenadaYFinal = coordenadaYInicial + parseInt(areaSelecionada.style.height.replace('px'))
+  const limiteSuperior = document.elementFromPoint(coordenadaXInicial, coordenadaYInicial)
+  const limiteInferior = document.elementFromPoint(coordenadaXFinal, coordenadaYFinal)
+
+  preencherCampoDoFormularioRecortes({
+    coordenadaXInicial: limiteSuperior.dataset.x,
+    coordenadaYInicial: limiteSuperior.dataset.y,
+    coordenadaXFinal: limiteInferior.dataset.x,
+    coordenadaYFinal: limiteInferior.dataset.y
+  })
+}
+
+function alterarCursorParaSelecionarRecorte() {
+  const container = document.getElementById('container')
+  if (container.classList.contains('cursor-select')) container.classList.remove('cursor-select')
+  else container.classList.add('cursor-select')
+}
+
 function fecharGuiaLateral(nomeGuia) {
   document.getElementById(nomeGuia).classList.add('navbar--closed')
 }
@@ -257,6 +355,10 @@ function preencherCampoDoFormularioDesenharReta(campo) {
 
 function preencherCampoDoFormularioDesenharCircunferencia(campo) {
   formularioController.preencherCamposDoFormulario('desenhar-circunferencia', campo)
+}
+
+function preencherCampoDoFormularioRecortes(campo) {
+  formularioController.preencherCamposDoFormulario('recortes', campo)
 }
 
 function executarOperacaoEscolhidaEmFormulario(operacao, formulario) {
