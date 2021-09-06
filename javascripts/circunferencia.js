@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição da 'circunferencia', 
+ * elementos que a integram e características.
+ */
 import Estrutura from './estrutura.js'
 
 export default class Circunferencia extends Estrutura {

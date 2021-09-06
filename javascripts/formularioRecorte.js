@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição dos 
+ * campos do 'formularioRecorte'.
+ */
 export default class FormularioRecorte {
   coordenadaXInicial
   coordenadaYInicial

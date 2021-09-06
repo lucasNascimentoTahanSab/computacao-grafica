@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição dos 
+ * campos do 'formularioTransformacoesGeometricas'.
+ */
 export default class FormularioTransformacoesGeometricas {
   fatorTransformacaoEmX
   fatorTransformacaoEmY

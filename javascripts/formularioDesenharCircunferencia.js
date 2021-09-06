@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição dos 
+ * campos do 'formularioDesenharCircunferencia'.
+ */
 export default class FormularioDesenharCircunferencia {
   coordenadaXCentral
   coordenadaYCentral

@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição dos 
+ * campos do 'formularioDesenharReta'.
+ */
 export default class FormularioDesenharReta {
   coordenadaXInicial
   coordenadaYInicial

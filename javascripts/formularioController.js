@@ -1,3 +1,7 @@
+/**
+ * Classe responsável pelo preenchimento dinânico de dados
+ * pertinentes a cada um dos formulários presentes na plataforma.
+ */
 import FormularioTransformacoesGeometricas from './formularioTransformacoesGeometricas.js';
 import FormularioDesenharReta from './formularioDesenharReta.js';
 import FormularioDesenharCircunferencia from './formularioDesenharCircunferencia.js';
