@@ -187,6 +187,21 @@ h1 {
   border-collapse: collapse;
 }
 
+.region-selected {
+  position: absolute;
+  z-index: 20;
+  border: .125rem dotted var(--text-color-dark);
+  background-color: rgba(93, 95, 239, 0.5);
+}
+
+.cursor-select {
+  cursor: crosshair;
+}
+
+.hidden {
+  display: none;
+}
+
 .selected {
   background-color: #1234;
 }
@@ -201,6 +216,20 @@ h1 {
 
 .large {
   width: 3rem;
+}
+
+.scrollable {
+  overflow: auto;
+}
+
+.no-select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 ::-webkit-scrollbar {

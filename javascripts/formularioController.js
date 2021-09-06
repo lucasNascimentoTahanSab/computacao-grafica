@@ -1,6 +1,7 @@
-import FormularioTransformacoesGeometricas from "./formularioTransformacoesGeometricas.js";
-import FormularioDesenharReta from "./formularioDesenharReta.js";
-import FormularioDesenharCircunferencia from "./formularioDesenharCircunferencia.js";
+import FormularioTransformacoesGeometricas from './formularioTransformacoesGeometricas.js';
+import FormularioDesenharReta from './formularioDesenharReta.js';
+import FormularioDesenharCircunferencia from './formularioDesenharCircunferencia.js';
+import FormularioRecorte from './formularioRecorte.js';
 
 export default class FormularioController {
   _formularios
@@ -9,7 +10,8 @@ export default class FormularioController {
     this._formularios = {
       'transformacoes-geometricas': new FormularioTransformacoesGeometricas,
       'desenhar-reta': new FormularioDesenharReta,
-      'desenhar-circunferencia': new FormularioDesenharCircunferencia
+      'desenhar-circunferencia': new FormularioDesenharCircunferencia,
+      'recortes': new FormularioRecorte
     }
   }
 
