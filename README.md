@@ -15,14 +15,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <h3 align="center">Computer Graphic Algorithms</h3>
+  <h3 align="center">Computer Graphics Algorithms</h3>
 
   <p align="center">
-    This is a platform for implementing and showing computer graphic algorithms working in practice with user inputs (mouse and keyboard). 
+    This is a platform for implementing and showing computer graphics algorithms working in practice with user inputs (mouse and keyboard). 
     <br />
     Any suggestions for improvements or corrections can be directed to the issues section or to the following email: lucas.sabtahan@gmail.com.
     <br />
-    The application site can be check out in here <a href="https://nasciontem.github.io/computacao-grafica/" target="_blank"><strong>Computer Graphic Algorithms</strong></a>
+    The application site can be check out in here <a href="https://nasciontem.github.io/computacao-grafica/" target="_blank"><strong>Computer Graphics Algorithms</strong></a>
     <br />
     <a href="https://github.com/nasciontem/computacao-grafica/issues">Report Bug</a>
     ·
@@ -53,7 +53,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This is a platform for implementing and showing computer graphic algorithms working in practice with user inputs (mouse and keyboard).
+This is a platform for implementing and showing computer graphics algorithms working in practice with user inputs (mouse and keyboard).
 
 <!-- BUILT WITH -->
 ### Built With
