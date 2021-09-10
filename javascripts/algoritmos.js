@@ -1,12 +1,27 @@
+/**
+ * Módulo responsável pela execução dos algoritmos de transformações
+ * geométricas 2D, desenho de retas e circunferências e operações de
+ * recorte.
+ */
 import Pixel from './pixel.js'
 import Reta from './reta.js'
 import Circunferencia from './circunferencia.js'
 
+/**
+ * Classe importante para registro do nome e identificador
+ * da estrutura a ser construída em seguida. Dados a serem
+ * recebidos do módulo de chamada.
+ */
 class EstruturaAtual {
   static estrutura
   static id
 }
 
+/**
+ * Método responsável pela aplicação da matriz de transformação de translação
+ * sobre a estrutura indicada. O canvas é concomitantemente atualizado
+ * conforme os cálculos são realizados.
+ */
 function transladarEstrutura(matrizTransformacao, estrutura, canvas) {
   for (let i = 0; i < estrutura.pixels.length; i++) {
     const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
@@ -26,6 +41,11 @@ function transladarEstrutura(matrizTransformacao, estrutura, canvas) {
   }
 }
 
+/**
+ * Método responsável pela aplicação da matriz de transformação de rotação
+ * sobre a estrutura indicada. O canvas é concomitantemente atualizado
+ * conforme os cálculos são realizados.
+ */
 function rotacionarEstrutura(matrizTransformacao, estrutura, canvas) {
   for (let i = 0; i < estrutura.pixels.length; i++) {
     const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
@@ -46,6 +66,11 @@ function rotacionarEstrutura(matrizTransformacao, estrutura, canvas) {
   }
 }
 
+/**
+ * Método responsável pela aplicação da matriz de transformação de escala
+ * sobre a estrutura indicada. O canvas é concomitantemente atualizado
+ * conforme os cálculos são realizados.
+ */
 function escalarEstrutura(matrizTransformacao, estrutura, canvas) {
   for (let i = 0; i < estrutura.pixels.length; i++) {
     const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
@@ -66,6 +91,14 @@ function escalarEstrutura(matrizTransformacao, estrutura, canvas) {
   }
 }
 
+/**
+ * Método responsável pela aplicação da matriz de transformação de reflexão
+ * sobre a estrutura indicada. O canvas é concomitantemente atualizado
+ * conforme os cálculos são realizados.
+ * Para valores negativos de 'x' e 'y' calculados, é obtido o seu correspondente
+ * à uma mesma distância da fronteira do 'canvas' oposta à que o ponto da estrutura
+ * se encontra.
+ */
 function refletirEstrutura(matrizTransformacao, estrutura, canvas) {
   for (let i = 0; i < estrutura.pixels.length; i++) {
     const [antigoX, antigoY] = [estrutura.pixels[i].x, estrutura.pixels[i].y]
@@ -88,6 +121,11 @@ function refletirEstrutura(matrizTransformacao, estrutura, canvas) {
   }
 }
 
+/**
+ * Método responsável pela aplicação do algoritmo DDA para desenho
+ * de retas no 'canvas' a partir da passagem dos pontos inicial e
+ * final da estrutura.
+ */
 function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
   const [deltaY, deltaX] = _obterDeltas(pixelFinal, pixelInicial)
   const [deltaYAbsoluto, deltaXAbsoluto] = _obterDeltasAbsolutos(deltaY, deltaX)
@@ -97,6 +135,11 @@ function desenharRetaComAlgoritmoDDA(pixelFinal, pixelInicial, canvas) {
   return _calcularPontosDaReta(pixelInicial, [incrementoEmY, incrementoEmX], passos, canvas)
 }
 
+/**
+ * Método responsável pela aplicação do algoritmo Bresenham para desenho
+ * de retas no 'canvas' a partir da passagem dos pontos inicial e
+ * final da estrutura.
+ */
 function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
   const [deltaY, deltaX] = _obterDeltas(pixelFinal, pixelInicial)
   const [deltaYAbsoluto, deltaXAbsoluto] = _obterDeltasAbsolutos(deltaY, deltaX)
@@ -114,6 +157,11 @@ function desenharRetaComAlgoritmoBresenham(pixelFinal, pixelInicial, canvas) {
     )
 }
 
+/**
+ * Método responsável pela aplicação do algoritmo Bresenham para desenho
+ * de circunferências no 'canvas' a partir da passagem do ponto central e
+ * raio da estrutura.
+ */
 function desenharCircunferencia(pixelCentral, raio, canvas) {
   const pInicial = _obterPInicialCircunferencia(raio)
   const incrementos = { x: 0, y: raio }
@@ -121,20 +169,34 @@ function desenharCircunferencia(pixelCentral, raio, canvas) {
   return _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, pInicial, canvas)
 }
 
+/**
+ * Método responsável pela aplicação do algoritmo Cohen-Sutherland para recortes
+ * no 'canvas' a partir da passagem dos limites da janela e retas a serem recortadas.
+ */
 function recorteCohenSutherland(limiteInferior, limiteSuperior, retas) {
   for (let i = 0; i < retas.length; i++)
     _analisarRetaParaRecorteCohenSutherland(retas[i], limiteInferior, limiteSuperior)
 }
 
+/**
+ * Método responsável pela aplicação do algoritmo Liang-Barsky para recortes
+ * no 'canvas' a partir da passagem dos limites da janela e retas a serem recortadas.
+ */
 function recorteLiangBarsky(limiteInferior, limiteSuperior, retas) {
   for (let i = 0; i < retas.length; i++)
     _analisarRetaParaRecorteLiangBarsky(retas[i], limiteInferior, limiteSuperior)
 }
 
+/**
+ * Método responsável pelo cálculo dos pontos da reta a partir da aplicação
+ * do algoritmo DDA, iniciando no primeiro pixel em incrementos regulares a
+ * depender da angulação da estrutura. Os pixels são armazenados na reta
+ * resultante
+ */
 function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX] = incrementos
-  const reta = new Reta()
+  const reta = new Reta
 
   for (let i = 0; i < passos + 1; i++) {
     const xArredondado = Math.round(x)
@@ -148,10 +210,17 @@ function _calcularPontosDaReta(pixelInicial, incrementos, passos, canvas) {
   return reta
 }
 
+/**
+ * Método responsável pelo cálculo dos pontos da reta a partir da aplicação 
+ * do algoritmo Bresenham quando Δy < Δx, iniciando no primeiro pixel em 
+ * incrementos regulares sobre as coordenadas a depender da variável de
+ * decisão 'p', para incremento de 'y'. Os pixels são armazenados na 
+ * reta resultante.
+ */
 function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
-  const reta = new Reta()
+  const reta = new Reta
 
   for (let i = 0; i < passos + 1; i++) {
     const pixel = canvas.pixels[x][y]
@@ -169,6 +238,13 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMenorQueDeltaX(pixelInicial, p, i
   return reta
 }
 
+/**
+ * Método responsável pelo cálculo dos pontos da reta a partir da aplicação 
+ * do algoritmo Bresenham quando Δy > Δx, iniciando no primeiro pixel em 
+ * incrementos regulares sobre as coordenadas a depender da variável de
+ * decisão 'p' para incremento de 'x'. Os pixels são armazenados na 
+ * reta resultante.
+ */
 function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, incrementos, passos, canvas) {
   let [x, y] = [pixelInicial.x, pixelInicial.y]
   const [incrementoEmY, incrementoEmX, incrementoDePNegativo, incrementoDePPositivo] = incrementos
@@ -190,6 +266,12 @@ function _calcularPontosDaRetaEmBresenhamDeltaYMaiorQueDeltaX(pixelInicial, p, i
   return reta
 }
 
+/**
+ * Método responsável pelo cálculo dos pontos da circunferência a partir
+ * da aplicação do algoritmo Bresenham, iniciando no primeiro pixel do
+ * primeiro quadrante até 45° depois, sendo os demais pontos calculados
+ * por regras de simetria.
+ */
 function _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, p, canvas) {
   const circunferencia = new Circunferencia()
 
@@ -208,6 +290,11 @@ function _calcularPontosDaCircunferenciaEmBresenham(incrementos, pixelCentral, p
   return circunferencia
 }
 
+/**
+ * Método responsável pelo preenchimento dos pixels pertencentes
+ * à circunferência a partir do pixel central definido e incrementos.
+ * Importante para cálculo por simetria dos pixels da circunferência. 
+ */
 function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   const comprimento = canvas.pixels.length - 1
   const altura = canvas.pixels[0].length - 1
@@ -249,6 +336,16 @@ function _desenharPontosDaCircunferencia(incrementos, pixelCentral, canvas) {
   return pontos
 }
 
+/**
+ * Método responsável pela análise dos pontos inicial e final
+ * da reta recebida em relação aos limites da janela, calculando
+ * o código de regiões de cada um dos pontos a cada iteração e 
+ * recalculando as coordenadas até que ambas estejam contidas 
+ * na janela, de acordo com o código de região '0000'.
+ * A linha _atualizarPontosRetaEmRecorte(reta, { x: -1, y: -1 }, { x: -1, y: -1 })
+ * só será execução em caso de ausência total da reta na janela, utilizada para
+ * invisibilizar a reta enquanto na operação de recorte. 
+ */
 function _analisarRetaParaRecorteCohenSutherland(reta, limiteInferior, limiteSuperior) {
   let analiseConcluida = false, pixelFora
   const [pixelInicial, pixelFinal] = [new Pixel(reta.pixels[0]), new Pixel(reta.pixels[reta.pixels.length - 1])]
@@ -279,6 +376,16 @@ function _analisarRetaParaRecorteCohenSutherland(reta, limiteInferior, limiteSup
   }
 }
 
+/**
+ * Método responsável pela análise dos pontos inicial e final
+ * da reta recebida em relação aos limites da janela, calculando
+ * a cada comparação novos valores para as variáveis paramétricas
+ * a serem utilizadas no final para atualização das coordenadas
+ * de início e fim da reta. 
+ * A linha _atualizarPontosRetaEmRecorte(reta, { x: -1, y: -1 }, { x: -1, y: -1 })
+ * só será execução em caso de ausência total da reta na janela, utilizada para
+ * invisibilizar a reta enquanto na operação de recorte. 
+ */
 function _analisarRetaParaRecorteLiangBarsky(reta, limiteInferior, limiteSuperior) {
   let desenharReta = false
   const variaveisParametricas = { inicio: 0, fim: 1 }
@@ -300,6 +407,11 @@ function _analisarRetaParaRecorteLiangBarsky(reta, limiteInferior, limiteSuperio
     : _atualizarPontosRetaEmRecorte(reta, { x: -1, y: -1 }, { x: -1, y: -1 })
 }
 
+/**
+ * Método responsável pela análise do posicionamento da reta a partir
+ * das variáveis 'p' e 'q' em relação às 4 fronteiras da janela e atualização
+ * das variáveis paramétricas.
+ */
 function _analisarRetaEmRelacaoFronteira(p, q, variaveisParametricas) {
   const r = q / p
   if (p < 0) {
@@ -313,6 +425,10 @@ function _analisarRetaEmRelacaoFronteira(p, q, variaveisParametricas) {
   return true
 }
 
+/**
+ * Método responsável pela invisibilização dos pontos da reta não
+ * presentes na janela selecionada na operação  de recorte.
+ */
 function _atualizarPontosRetaEmRecorte(reta, limiteInferior, limiteSuperior) {
   const [deltaY, deltaX] = _obterDeltas(limiteInferior, limiteSuperior)
   for (let i = 0; i < reta.pixels.length; i++) {
@@ -321,6 +437,11 @@ function _atualizarPontosRetaEmRecorte(reta, limiteInferior, limiteSuperior) {
   }
 }
 
+/**
+ * Método responsável pela multiplização da matriz ponto
+ * pela matriz de transformação recebida para obtenção de
+ * um novo ponto.
+ */
 function _multiplicarMatrizPontoPorTransformacao(matrizPonto, matrizTransformacao) {
   if (matrizPonto.length != matrizTransformacao.length) return []
 

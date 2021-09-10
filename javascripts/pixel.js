@@ -1,3 +1,7 @@
+/**
+ * Estrutura de dados responsável pela definição do 'pixel' e
+ * suas características.
+ */
 export default class Pixel {
   visivel
   estrutura

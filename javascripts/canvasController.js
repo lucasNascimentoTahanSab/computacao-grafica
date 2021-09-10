@@ -1,3 +1,11 @@
+/**
+ * Módulo responsável pelo carregamento do canvas, incluso a formatação
+ * dos pixels a serem representados e sua quantidade. Além disso, é entidade
+ * intermediária entre o 'index.js' e o módulo de algoritmos.
+ * Possui registro de todas as estruturas de dados representadas no canvas (retas
+ * e circunferências) e é a principal responsável pela alteração, inclusão e
+ * exclusão das mesmas. 
+ */
 import Canvas from './canvas.js'
 import Pixel from './pixel.js'
 import algoritmos from './algoritmos.js'
@@ -13,15 +21,21 @@ export default class CanvasController {
   _operacoes
   _estruturas
 
+  /**
+   * A entidade 'operacoes' é importante para registro e chamada dinâmica das
+   * operações passíveis de execução pelo módulo de algoritmos. A entidade
+   * 'estruturas' é uma rota importante para acesso dinâmico das estruturas
+   * cadastradas na 'canvasController'.
+   */
   constructor() {
     this._canvas = new Canvas
     this._retas = []
     this._circunferencias = []
     this._operacoes = {
-      'translacao': this._transladarElementos.bind(this),
-      'rotacao': this._rotacionarElementos.bind(this),
-      'escala': this._escalarElementos.bind(this),
-      'reflexao': this._refletirElementos.bind(this),
+      'translacao': this._transladarEstrutura.bind(this),
+      'rotacao': this._rotacionarEstrutura.bind(this),
+      'escala': this._escalarEstrutura.bind(this),
+      'reflexao': this._refletirEstrutura.bind(this),
       'dda': this._desenharRetaComAlgoritmoDDA.bind(this),
       'bresenham': this._desenharRetaComAlgoritmoBresenham.bind(this),
       'desenhar-circunferencia': this._desenharCircunferencia.bind(this),
@@ -34,10 +48,18 @@ export default class CanvasController {
     }
   }
 
+  /**
+   * Método responsável pela obtenção da matriz de pixels calculada
+   * no carregamento para exibição ao usuário.
+   */
   get matrizPixels() {
     return this._canvas.pixels
   }
 
+  /**
+   * Método responsável pelo carregamento do 'canvas', todos
+   * os seus pixels, dimensões de cada um e quantidades.
+   */
   carregarCanvas() {
     const [alturaPixel, comprimentoPixel] = _calcularDimensoesPixel(this._canvas, this._canvas.zoom)
     const [quantidadePixelsVertical, quantidadePixelsHorizontal] = _calcularQuantidadePixels(this._canvas, alturaPixel, comprimentoPixel)
@@ -47,12 +69,21 @@ export default class CanvasController {
     )
   }
 
+  /**
+   * Método responsável pela chamada e passagem de informações
+   * dinâmica à operação selecionada.
+   */
   executarOperacaoPorMeioDasInformacoes(operacao, informacoes) {
     if (!(operacao in this._operacoes)) return
 
     return this._operacoes[operacao](informacoes)
   }
 
+  /**
+   * Método responsável pela geração da malha de pixels no
+   * 'canvas' por meio da quantidade e dimensões previamente
+   * calculadas.
+   */
   _gerarMalhaDePixelsAPartirDasInformacoes(quantidade, dimensoes) {
     const pixels = []
     const [altura, comprimento] = dimensoes
@@ -66,7 +97,11 @@ export default class CanvasController {
     return pixels
   }
 
-  _transladarElementos(informacoes) {
+  /**
+   * Método responsável pela execução da translação da estrutura
+   * selecionada a partir da informação dos fatores de transformação.
+   */
+  _transladarEstrutura(informacoes) {
     if (!('fatorTransformacaoEmX' in informacoes) || !('fatorTransformacaoEmY' in informacoes) || !('estruturaAtual' in informacoes) || !('idEstruturaAtual' in informacoes))
       return false
 
@@ -79,7 +114,11 @@ export default class CanvasController {
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
   }
 
-  _rotacionarElementos(informacoes) {
+  /**
+   * Método responsável pela execução da rotação da estrutura
+   * selecionada a partir da informação do fator de angulação.
+   */
+  _rotacionarEstrutura(informacoes) {
     if (!('angulacaoDaRotacao' in informacoes) || !('estruturaAtual' in informacoes) || !('idEstruturaAtual' in informacoes))
       return false
 
@@ -91,7 +130,11 @@ export default class CanvasController {
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
   }
 
-  _escalarElementos(informacoes) {
+  /**
+   * Método responsável pela execução da escala da estrutura
+   * selecionada a partir da informação dos fatores de transformação.
+   */
+  _escalarEstrutura(informacoes) {
     if (!('fatorTransformacaoEmX' in informacoes) || !('fatorTransformacaoEmY' in informacoes) || !('estruturaAtual' in informacoes) || !('idEstruturaAtual' in informacoes))
       return false
 
@@ -104,7 +147,11 @@ export default class CanvasController {
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
   }
 
-  _refletirElementos(informacoes) {
+  /**
+   * Método responsável pela execução da reflexão da estrutura
+   * selecionada a partir da informação dos eixos de reflexão.
+   */
+  _refletirEstrutura(informacoes) {
     if (!('refletirEmX' in informacoes) || !('refletirEmY' in informacoes) || !('estruturaAtual' in informacoes) || !('idEstruturaAtual' in informacoes))
       return false
 
@@ -115,6 +162,13 @@ export default class CanvasController {
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
   }
 
+  /**
+   * Método responsável pela execução do algoritmo DDA
+   * para retas. Após execução do algoritmo, a estrutura
+   * gerada é registrada para posteriores manipulações.
+   * São passadas as coordenadas para os pontos final e inicial
+   * da reta.
+   */
   _desenharRetaComAlgoritmoDDA(informacoes) {
     if (
       !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
@@ -130,6 +184,13 @@ export default class CanvasController {
     this._atualizarCanvasComNovaEstrutura(this._retas[this._retas.length - 1])
   }
 
+  /**
+   * Método responsável pela execução do algoritmo Bresenham
+   * para retas. Após execução do algoritmo, a estrutura
+   * gerada é registrada para posteriores manipulações.
+   * São passadas as coordenadas para os pontos final e inicial
+   * da reta.
+   */
   _desenharRetaComAlgoritmoBresenham(informacoes) {
     if (
       !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
@@ -145,6 +206,13 @@ export default class CanvasController {
     this._atualizarCanvasComNovaEstrutura(this._retas[this._retas.length - 1])
   }
 
+  /**
+   * Método responsável pela execução do algoritmo Bresenham
+   * para circunferências. Após execução do algoritmo, a estrutura
+   * gerada é registrada para posteriores manipulações.
+   * São passadas a coordenada para o ponto central e o raio
+   * da circunferência.
+   */
   _desenharCircunferencia(informacoes) {
     if (
       !('coordenadaXCentral' in informacoes) || !('coordenadaYCentral' in informacoes) ||
@@ -160,6 +228,11 @@ export default class CanvasController {
     this._atualizarCanvasComNovaEstrutura(this._circunferencias[this._circunferencias.length - 1])
   }
 
+  /**
+   * Método responsável pela execução do algoritmo Cohen-Sutherland para
+   * recortes. São passadas as coordenadas para os limites inferior e
+   * superior da janela.
+   */
   _recorteCohenSutherland(informacoes) {
     if (
       !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
@@ -173,6 +246,11 @@ export default class CanvasController {
     this._atualizarRetasNoCanvas()
   }
 
+  /**
+   * Método responsável pela execução do algoritmo Liang-Barsky para
+   * recortes. São passadas as coordenadas para os limites inferior e
+   * superior da janela.
+   */
   _recorteLiangBarsky(informacoes) {
     if (
       !('coordenadaXFinal' in informacoes) || !('coordenadaYFinal' in informacoes) ||
@@ -186,6 +264,10 @@ export default class CanvasController {
     this._atualizarRetasNoCanvas()
   }
 
+  /**
+   * Método responsável pela atualização do 'canvas' sempre que
+   * uma nova estrutura for inserida. 
+   */
   _atualizarCanvasComNovaEstrutura(estrutura) {
     if (!('pixels' in estrutura)) return
 
@@ -196,11 +278,19 @@ export default class CanvasController {
     });
   }
 
+  /**
+   * Método responsável pela atualização das estruturas de retas
+   * existentes no 'canvas' após execução dos algoritmos de recorte.
+   */
   _atualizarRetasNoCanvas() {
     for (let i = 0; i < this._retas.length; i++)
       this._retas[i].pixels.forEach(pixel => this._canvas.pixels[pixel.x][pixel.y] = { ...pixel });
   }
 
+  /**
+   * Método responsável pela obtenção da matriz de transformação de
+   * translação.
+   */
   _obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY) {
     return [
       [1, 0, fatorTransformacaoEmX],
@@ -209,6 +299,10 @@ export default class CanvasController {
     ]
   }
 
+  /**
+   * Método responsável pela obtenção da matriz de transformação de
+   * rotação.
+   */
   _obterMatrizTransformacaoRotacao(angulacaoDaRotacao) {
     return [
       [Math.cos(_obterGrausEmRadianos(angulacaoDaRotacao)), -Math.sin(_obterGrausEmRadianos(angulacaoDaRotacao)), 0],
@@ -217,6 +311,10 @@ export default class CanvasController {
     ]
   }
 
+  /**
+   * Método responsável pela obtenção da matriz de transformação de
+   * escala.
+   */
   _obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY) {
     return [
       [fatorTransformacaoEmX, 0, 0],
@@ -225,6 +323,10 @@ export default class CanvasController {
     ]
   }
 
+  /**
+   * Método responsável pela obtenção da matriz de transformação de
+   * reflexão.
+   */
   _obterMatrizTransformacaoReflexao(eixoX, eixoY) {
     return [
       [eixoY ? -1 : 1, 0, 0],
