@@ -109,6 +109,8 @@ export default class CanvasController {
     const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
     const matrizTransformacao = this._obterMatrizTransformacaoTranslacao(fatorTransformacaoEmX, fatorTransformacaoEmY)
     const estruturaAtual = this._estruturas[informacoes.estruturaAtual][informacoes.idEstruturaAtual]
+    if (!estruturaAtual) return
+
     algoritmos.transladarEstrutura(matrizTransformacao, estruturaAtual, this._canvas)
 
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
@@ -125,6 +127,8 @@ export default class CanvasController {
     const angulacaoDaRotacao = informacoes.angulacaoDaRotacao
     const matrizTransformacao = this._obterMatrizTransformacaoRotacao(angulacaoDaRotacao)
     const estruturaAtual = this._estruturas[informacoes.estruturaAtual][informacoes.idEstruturaAtual]
+    if (!estruturaAtual) return
+
     algoritmos.rotacionarEstrutura(matrizTransformacao, estruturaAtual, this._canvas)
 
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
@@ -142,6 +146,8 @@ export default class CanvasController {
     const fatorTransformacaoEmY = parseFloat(informacoes.fatorTransformacaoEmY)
     const matrizTransformacao = this._obterMatrizTransformacaoEscala(fatorTransformacaoEmX, fatorTransformacaoEmY)
     const estruturaAtual = this._estruturas[informacoes.estruturaAtual][informacoes.idEstruturaAtual]
+    if (!estruturaAtual) return
+
     algoritmos.escalarEstrutura(matrizTransformacao, estruturaAtual, this._canvas)
 
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
@@ -157,6 +163,8 @@ export default class CanvasController {
 
     const matrizTransformacao = this._obterMatrizTransformacaoReflexao(informacoes.refletirEmX, informacoes.refletirEmY)
     const estruturaAtual = this._estruturas[informacoes.estruturaAtual][informacoes.idEstruturaAtual]
+    if (!estruturaAtual) return
+
     algoritmos.refletirEstrutura(matrizTransformacao, estruturaAtual, this._canvas)
 
     if (estruturaAtual.pixels.length === 0) this._estruturas[informacoes.estruturaAtual].splice(informacoes.idEstruturaAtual, 1)
