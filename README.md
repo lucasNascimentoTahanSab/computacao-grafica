@@ -126,5 +126,5 @@ The template used as base for this README file was extracted from ![Best-README-
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/lucas-nascimento-306465195/
 [best-readme-url]: https://github.com/othneildrew/Best-README-Template
-[screenshot-01-url]: public/sources/screenshot01.png
-[screenshot-02-url]: public/sources/screenshot02.png
+[screenshot-01-url]: sources/screenshot01.png
+[screenshot-02-url]: sources/screenshot02.png
