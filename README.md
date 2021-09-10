@@ -129,4 +129,4 @@ The template used as base for this README file was extracted from ![Best-README-
 [best-readme-url]: https://github.com/othneildrew/Best-README-Template
 [screenshot-01-url]: sources/screenshot01.png
 [screenshot-02-url]: sources/screenshot02.png
-[gif-01-url]: sources/computacao-grafica-implementacao-01-gif.mp4
+[gif-01-url]: sources/computacao-grafica-implementacao-01-gif.gif
